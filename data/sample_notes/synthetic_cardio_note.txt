@@ -1,0 +1,23 @@
+SYNTHETIC CLINICAL NOTE - FAKE SIMULATED DATA ONLY
+PATIENT NAME: Robert M. Generic
+DOB: 12/04/1965
+MRN: MRN-8829104
+PHONE: 555-014-9922
+EMAIL: robert.generic@fakehealthmail.com
+SSN: 987-65-4320
+DEPARTMENT: Cardiology Consultation
+
+HISTORY OF PRESENT ILLNESS:
+The patient is a 60-year-old male presenting with intermittent palpitations and shortness of breath upon moderate exertion over the past 3 weeks. Denies chest pain, syncope, or diaphoresis.
+
+PHYSICAL EXAMINATION:
+BP: 138/84 mmHg, HR: 88 bpm irregular, RR: 16 bpm, SpO2: 98% on room air.
+Cardiovascular: Irregular rhythm consistent with atrial fibrillation. No murmurs or gallops.
+
+CURRENT MEDICATIONS:
+1. Lisinopril 10 mg orally once daily.
+2. Atorvastatin 40 mg orally once daily at bedtime.
+
+PLAN & RECOMMENDATIONS:
+- Start Apixaban 5 mg orally twice daily for non-valvular atrial fibrillation stroke prophylaxis (CHA2DS2-VASc score = 2).
+- Follow up in outpatient cardiology clinic in 4 weeks.

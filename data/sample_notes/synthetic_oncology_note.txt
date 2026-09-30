@@ -1,0 +1,23 @@
+SYNTHETIC CLINICAL NOTE - FAKE SIMULATED DATA ONLY
+PATIENT: Eleanor Vance
+DOB: 04/18/1972
+MRN: MRN-5520193
+PHONE: (555) 234-8901
+EMAIL: eleanor.vance@fictionalcare.org
+SSN: 456-78-1234
+ADDRESS: 742 Evergreen Terrace, Springfield, OR 97477
+DEPARTMENT: Medical Oncology
+
+CHIEF COMPLAINT:
+Follow-up consultation for Stage II hormone receptor-positive, HER2-negative invasive ductal carcinoma of the right breast post-lumpectomy.
+
+MEDICATIONS:
+1. Tamoxifen 20 mg orally once daily.
+2. Ondansetron 8 mg orally 30 minutes prior to chemotherapy as needed for nausea.
+3. Doxorubicin 60 mg/m2 IV every 21 days for 4 cycles.
+
+ASSESSMENT & PLAN:
+- Pt tolerated initial cycle of adjuvant doxorubicin with mild fatigue.
+- Continue Tamoxifen 20 mg daily.
+- Repeat CBC and comprehensive metabolic panel before Cycle 2 on 10/15/2026.
+- In case of acute fever > 38.3 C, report to ER immediately.

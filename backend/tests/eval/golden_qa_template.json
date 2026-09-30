@@ -1,0 +1,553 @@
+[
+  {
+    "id": "qa-001",
+    "question": "What is the recommended first-line anticoagulant for non-valvular atrial fibrillation with CHA2DS2-VASc score >= 2?",
+    "expected_answer": "Direct oral anticoagulants (DOACs) such as Apixaban 5 mg twice daily or Rivaroxaban 20 mg once daily are recommended as first-line therapy over Vitamin K antagonists.",
+    "expected_document": "sample_afib_guideline.pdf",
+    "expected_page": 1,
+    "expected_drugs": [
+      {"drug": "Apixaban", "dosage": "5 mg", "frequency": "twice daily"},
+      {"drug": "Rivaroxaban", "dosage": "20 mg", "frequency": "once daily"}
+    ],
+    "category": "Cardiology",
+    "difficulty": "Medium"
+  },
+  {
+    "id": "qa-002",
+    "question": "What are the dose reduction criteria for Apixaban in non-valvular atrial fibrillation?",
+    "expected_answer": "Dose reduce to 2.5 mg twice daily if the patient meets at least 2 of the following 3 criteria: age >= 80 years, body weight <= 60 kg, or serum creatinine >= 1.5 mg/dL.",
+    "expected_document": "sample_afib_guideline.pdf",
+    "expected_page": 2,
+    "expected_drugs": [
+      {"drug": "Apixaban", "dosage": "2.5 mg", "frequency": "twice daily"}
+    ],
+    "category": "Pharmacology",
+    "difficulty": "Hard"
+  },
+  {
+    "id": "qa-003",
+    "question": "What is the recommended first-line rate control agent in atrial fibrillation with preserved LVEF?",
+    "expected_answer": "Beta-blockers (such as Metoprolol succinate 50-200 mg once daily or Bisoprolol 5-10 mg once daily) or non-dihydropyridine calcium channel blockers (such as Diltiazem 120-360 mg once daily) are recommended.",
+    "expected_document": "sample_afib_guideline.pdf",
+    "expected_page": 2,
+    "expected_drugs": [
+      {"drug": "Metoprolol succinate", "dosage": "50-200 mg", "frequency": "once daily"},
+      {"drug": "Diltiazem", "dosage": "120-360 mg", "frequency": "once daily"}
+    ],
+    "category": "Cardiology",
+    "difficulty": "Medium"
+  },
+  {
+    "id": "qa-004",
+    "question": "How is non-valvular atrial fibrillation definitively diagnosed on an ECG?",
+    "expected_answer": "Diagnosis requires documentation of irregular supraventricular rhythm without distinct P waves on a standard 12-lead ECG or rhythm strip persisting for at least 30 seconds.",
+    "expected_document": "sample_afib_guideline.pdf",
+    "expected_page": 1,
+    "expected_drugs": [],
+    "category": "Diagnostics",
+    "difficulty": "Easy"
+  },
+  {
+    "id": "qa-005",
+    "question": "What is the renal dose adjustment for Rivaroxaban in atrial fibrillation when CrCl is 15-50 mL/min?",
+    "expected_answer": "Rivaroxaban should be reduced to 15 mg orally once daily with the evening meal for patients with CrCl between 15 and 50 mL/min.",
+    "expected_document": "sample_afib_guideline.pdf",
+    "expected_page": 2,
+    "expected_drugs": [
+      {"drug": "Rivaroxaban", "dosage": "15 mg", "frequency": "once daily"}
+    ],
+    "category": "Pharmacology",
+    "difficulty": "Hard"
+  },
+  {
+    "id": "qa-006",
+    "question": "What antiarrhythmic drugs are recommended for rhythm control in atrial fibrillation without structural heart disease?",
+    "expected_answer": "Flecainide 50-150 mg twice daily is recommended for patients without structural or ischemic heart disease.",
+    "expected_document": "sample_afib_guideline.pdf",
+    "expected_page": 2,
+    "expected_drugs": [
+      {"drug": "Flecainide", "dosage": "50-150 mg", "frequency": "twice daily"}
+    ],
+    "category": "Cardiology",
+    "difficulty": "Medium"
+  },
+  {
+    "id": "qa-007",
+    "question": "What rhythm control drug is indicated for atrial fibrillation in patients with heart failure?",
+    "expected_answer": "Amiodarone 200 mg orally once daily is indicated for rhythm control in patients with heart failure or significant structural heart disease.",
+    "expected_document": "sample_afib_guideline.pdf",
+    "expected_page": 2,
+    "expected_drugs": [
+      {"drug": "Amiodarone", "dosage": "200 mg", "frequency": "once daily"}
+    ],
+    "category": "Cardiology",
+    "difficulty": "Hard"
+  },
+  {
+    "id": "qa-008",
+    "question": "What is the standard adult dose of Dabigatran for stroke prevention in non-valvular AF?",
+    "expected_answer": "The standard dose of Dabigatran is 150 mg orally twice daily.",
+    "expected_document": "sample_afib_guideline.pdf",
+    "expected_page": 2,
+    "expected_drugs": [
+      {"drug": "Dabigatran", "dosage": "150 mg", "frequency": "twice daily"}
+    ],
+    "category": "Pharmacology",
+    "difficulty": "Easy"
+  },
+  {
+    "id": "qa-009",
+    "question": "What is the CHA2DS2-VASc threshold for recommending oral anticoagulation in male patients?",
+    "expected_answer": "Oral anticoagulation is strongly recommended for male patients with a CHA2DS2-VASc score >= 2.",
+    "expected_document": "sample_afib_guideline.pdf",
+    "expected_page": 1,
+    "expected_drugs": [],
+    "category": "Cardiology",
+    "difficulty": "Easy"
+  },
+  {
+    "id": "qa-010",
+    "question": "What is the percentage of renal elimination for Dabigatran compared to Apixaban?",
+    "expected_answer": "Dabigatran has approximately 80% renal elimination whereas Apixaban has approximately 27% renal elimination.",
+    "expected_document": "sample_afib_guideline.pdf",
+    "expected_page": 2,
+    "expected_drugs": [],
+    "category": "Pharmacology",
+    "difficulty": "Hard"
+  },
+  {
+    "id": "qa-011",
+    "question": "What second-line agent is indicated for rate control when beta-blockers are contraindicated or insufficient?",
+    "expected_answer": "Digoxin is recommended as a secondary rate control agent when beta-blockers and calcium channel blockers are contraindicated or insufficient.",
+    "expected_document": "sample_afib_guideline.pdf",
+    "expected_page": 2,
+    "expected_drugs": [
+      {"drug": "Digoxin", "dosage": "", "frequency": ""}
+    ],
+    "category": "Cardiology",
+    "difficulty": "Medium"
+  },
+  {
+    "id": "qa-012",
+    "question": "What stroke risk factor in the CHA2DS2-VASc score is assigned 2 points?",
+    "expected_answer": "Age >= 75 years and prior Stroke or Transient Ischemic Attack (TIA) are each assigned 2 points.",
+    "expected_document": "sample_afib_guideline.pdf",
+    "expected_page": 1,
+    "expected_drugs": [],
+    "category": "Cardiology",
+    "difficulty": "Medium"
+  },
+  {
+    "id": "qa-013",
+    "question": "What is the primary advantage of DOACs over Warfarin according to clinical guidelines?",
+    "expected_answer": "DOACs provide lower rates of intracranial hemorrhage and fatal bleeding compared to Warfarin.",
+    "expected_document": "sample_afib_guideline.pdf",
+    "expected_page": 1,
+    "expected_drugs": [],
+    "category": "Pharmacology",
+    "difficulty": "Easy"
+  },
+  {
+    "id": "qa-014",
+    "question": "What initial laboratory tests should be ordered during diagnostic evaluation for suspected atrial fibrillation?",
+    "expected_answer": "Complete blood count (CBC), serum thyroid-stimulating hormone (TSH), and renal function panel alongside transthoracic echocardiogram.",
+    "expected_document": "sample_afib_guideline.pdf",
+    "expected_page": 1,
+    "expected_drugs": [],
+    "category": "Diagnostics",
+    "difficulty": "Medium"
+  },
+  {
+    "id": "qa-015",
+    "question": "What dose reduction of Dabigatran is indicated for severe renal impairment with CrCl 15-30 mL/min?",
+    "expected_answer": "Dabigatran is reduced to 75 mg orally twice daily in patients with CrCl 15-30 mL/min.",
+    "expected_document": "sample_afib_guideline.pdf",
+    "expected_page": 2,
+    "expected_drugs": [
+      {"drug": "Dabigatran", "dosage": "75 mg", "frequency": "twice daily"}
+    ],
+    "category": "Pharmacology",
+    "difficulty": "Hard"
+  },
+  {
+    "id": "qa-016",
+    "question": "What is the typical dosage range of Metoprolol succinate for ventricular rate control in atrial fibrillation?",
+    "expected_answer": "Metoprolol succinate 50-200 mg orally once daily.",
+    "expected_document": "sample_afib_guideline.pdf",
+    "expected_page": 2,
+    "expected_drugs": [
+      {"drug": "Metoprolol succinate", "dosage": "50-200 mg", "frequency": "once daily"}
+    ],
+    "category": "Pharmacology",
+    "difficulty": "Medium"
+  },
+  {
+    "id": "qa-017",
+    "question": "When is catheter ablation considered first-line therapy for atrial fibrillation?",
+    "expected_answer": "Catheter ablation is indicated as first-line therapy in selected young symptomatic patients with paroxysmal AF or when antiarrhythmic pharmacotherapy fails.",
+    "expected_document": "sample_afib_guideline.pdf",
+    "expected_page": 2,
+    "expected_drugs": [],
+    "category": "Interventional Cardiology",
+    "difficulty": "Hard"
+  },
+  {
+    "id": "qa-018",
+    "question": "What is the lifetime risk of developing atrial fibrillation in adults of European ancestry?",
+    "expected_answer": "The lifetime risk is approximately 1 in 3.",
+    "expected_document": "sample_afib_guideline.pdf",
+    "expected_page": 1,
+    "expected_drugs": [],
+    "category": "Epidemiology",
+    "difficulty": "Easy"
+  },
+  {
+    "id": "qa-019",
+    "question": "What increased risk factor multiplier does atrial fibrillation confer for ischemic stroke?",
+    "expected_answer": "Atrial fibrillation is associated with a 5-fold increased risk of ischemic stroke.",
+    "expected_document": "sample_afib_guideline.pdf",
+    "expected_page": 1,
+    "expected_drugs": [],
+    "category": "Cardiology",
+    "difficulty": "Easy"
+  },
+  {
+    "id": "qa-020",
+    "question": "Should Rivaroxaban be taken with or without food for non-valvular AF?",
+    "expected_answer": "Rivaroxaban 20 mg should be taken with food (specifically with the evening meal) to ensure adequate oral bioavailability.",
+    "expected_document": "sample_afib_guideline.pdf",
+    "expected_page": 1,
+    "expected_drugs": [
+      {"drug": "Rivaroxaban", "dosage": "20 mg", "frequency": "once daily"}
+    ],
+    "category": "Pharmacology",
+    "difficulty": "Medium"
+  },
+  {
+    "id": "qa-021",
+    "question": "What is the recommended dosage of Bisoprolol for rate control in atrial fibrillation?",
+    "expected_answer": "Bisoprolol 5-10 mg orally once daily.",
+    "expected_document": "sample_afib_guideline.pdf",
+    "expected_page": 2,
+    "expected_drugs": [
+      {"drug": "Bisoprolol", "dosage": "5-10 mg", "frequency": "once daily"}
+    ],
+    "category": "Pharmacology",
+    "difficulty": "Medium"
+  },
+  {
+    "id": "qa-022",
+    "question": "What is the recommended dosage range for Diltiazem in atrial fibrillation rate control?",
+    "expected_answer": "Diltiazem 120-360 mg orally once daily (extended-release formulation).",
+    "expected_document": "sample_afib_guideline.pdf",
+    "expected_page": 2,
+    "expected_drugs": [
+      {"drug": "Diltiazem", "dosage": "120-360 mg", "frequency": "once daily"}
+    ],
+    "category": "Pharmacology",
+    "difficulty": "Medium"
+  },
+  {
+    "id": "qa-023",
+    "question": "In the CHA2DS2-VASc score, what points are allocated for diabetes mellitus?",
+    "expected_answer": "Diabetes mellitus is assigned 1 point.",
+    "expected_document": "sample_afib_guideline.pdf",
+    "expected_page": 1,
+    "expected_drugs": [],
+    "category": "Cardiology",
+    "difficulty": "Easy"
+  },
+  {
+    "id": "qa-024",
+    "question": "In the CHA2DS2-VASc score, how many points are allocated for female sex?",
+    "expected_answer": "Female sex category is allocated 1 point.",
+    "expected_document": "sample_afib_guideline.pdf",
+    "expected_page": 1,
+    "expected_drugs": [],
+    "category": "Cardiology",
+    "difficulty": "Easy"
+  },
+  {
+    "id": "qa-025",
+    "question": "What structural heart disease imaging modality is mandatory during initial workup of atrial fibrillation?",
+    "expected_answer": "Transthoracic echocardiography (TTE) is mandatory to evaluate left atrial size, left ventricular systolic function, and valvular heart disease.",
+    "expected_document": "sample_afib_guideline.pdf",
+    "expected_page": 1,
+    "expected_drugs": [],
+    "category": "Diagnostics",
+    "difficulty": "Medium"
+  },
+  {
+    "id": "qa-026",
+    "question": "What is the oral maintenance dosage of Tamoxifen in hormone receptor-positive early breast cancer?",
+    "expected_answer": "Tamoxifen 20 mg orally once daily.",
+    "expected_document": "synthetic_oncology_note.txt",
+    "expected_page": 1,
+    "expected_drugs": [
+      {"drug": "Tamoxifen", "dosage": "20 mg", "frequency": "once daily"}
+    ],
+    "category": "Oncology",
+    "difficulty": "Easy"
+  },
+  {
+    "id": "qa-027",
+    "question": "What antiemetic is recommended prior to chemotherapy as needed for nausea?",
+    "expected_answer": "Ondansetron 8 mg orally 30 minutes prior to chemotherapy.",
+    "expected_document": "synthetic_oncology_note.txt",
+    "expected_page": 1,
+    "expected_drugs": [
+      {"drug": "Ondansetron", "dosage": "8 mg", "frequency": "as needed"}
+    ],
+    "category": "Oncology",
+    "difficulty": "Medium"
+  },
+  {
+    "id": "qa-028",
+    "question": "What is the standard adjuvant Doxorubicin chemotherapy regimen?",
+    "expected_answer": "Doxorubicin 60 mg/m2 IV every 21 days for 4 cycles.",
+    "expected_document": "synthetic_oncology_note.txt",
+    "expected_page": 1,
+    "expected_drugs": [
+      {"drug": "Doxorubicin", "dosage": "60 mg/m2", "frequency": "every 21 days"}
+    ],
+    "category": "Oncology",
+    "difficulty": "Hard"
+  },
+  {
+    "id": "qa-029",
+    "question": "What is the oral antibiotic and duration for acute exacerbation of chronic bronchitis?",
+    "expected_answer": "Azithromycin 500 mg orally once daily for 5 days.",
+    "expected_document": "synthetic_er_discharge.txt",
+    "expected_page": 1,
+    "expected_drugs": [
+      {"drug": "Azithromycin", "dosage": "500 mg", "frequency": "once daily"}
+    ],
+    "category": "Pulmonology",
+    "difficulty": "Easy"
+  },
+  {
+    "id": "qa-030",
+    "question": "What oral corticosteroid regimen is prescribed for acute COPD exacerbation upon discharge?",
+    "expected_answer": "Prednisolone 40 mg orally once daily for 5 days with a tapering schedule.",
+    "expected_document": "synthetic_er_discharge.txt",
+    "expected_page": 1,
+    "expected_drugs": [
+      {"drug": "Prednisolone", "dosage": "40 mg", "frequency": "once daily"}
+    ],
+    "category": "Pulmonology",
+    "difficulty": "Medium"
+  },
+  {
+    "id": "qa-031",
+    "question": "What combination maintenance inhaler is prescribed post-COPD exacerbation?",
+    "expected_answer": "Formoterol / Budesonide (6/200 mcg) inhaler 2 puffs twice daily.",
+    "expected_document": "synthetic_er_discharge.txt",
+    "expected_page": 1,
+    "expected_drugs": [
+      {"drug": "Formoterol / Budesonide", "dosage": "6/200 mcg", "frequency": "2 puffs twice daily"}
+    ],
+    "category": "Pulmonology",
+    "difficulty": "Medium"
+  },
+  {
+    "id": "qa-032",
+    "question": "What nebulized bronchodilator doses are administered in the emergency room for acute bronchospasm?",
+    "expected_answer": "Salbutamol 2.5 mg and Ipratropium bromide 0.5 mg nebulized every 4 hours.",
+    "expected_document": "synthetic_er_discharge.txt",
+    "expected_page": 1,
+    "expected_drugs": [
+      {"drug": "Salbutamol", "dosage": "2.5 mg", "frequency": "every 4 hours"},
+      {"drug": "Ipratropium bromide", "dosage": "0.5 mg", "frequency": "every 4 hours"}
+    ],
+    "category": "Emergency Medicine",
+    "difficulty": "Medium"
+  },
+  {
+    "id": "qa-033",
+    "question": "What initial intravenous corticosteroid is given for acute severe COPD exacerbation?",
+    "expected_answer": "IV Hydrocortisone 100 mg initially.",
+    "expected_document": "synthetic_er_discharge.txt",
+    "expected_page": 1,
+    "expected_drugs": [
+      {"drug": "Hydrocortisone", "dosage": "100 mg", "frequency": "initially"}
+    ],
+    "category": "Emergency Medicine",
+    "difficulty": "Medium"
+  },
+  {
+    "id": "qa-034",
+    "question": "What target oxygen saturation was achieved in the emergency department for the acute COPD patient?",
+    "expected_answer": "Oxygen saturation stabilized at 94% on ambient room air.",
+    "expected_document": "synthetic_er_discharge.txt",
+    "expected_page": 1,
+    "expected_drugs": [],
+    "category": "Pulmonology",
+    "difficulty": "Easy"
+  },
+  {
+    "id": "qa-035",
+    "question": "What antihypertensive was previously prescribed for the patient presenting with palpitations?",
+    "expected_answer": "Lisinopril 10 mg orally once daily.",
+    "expected_document": "synthetic_cardio_note.txt",
+    "expected_page": 1,
+    "expected_drugs": [
+      {"drug": "Lisinopril", "dosage": "10 mg", "frequency": "once daily"}
+    ],
+    "category": "Cardiology",
+    "difficulty": "Easy"
+  },
+  {
+    "id": "qa-036",
+    "question": "What lipid-lowering medication was prescribed to the patient presenting with atrial fibrillation?",
+    "expected_answer": "Atorvastatin 40 mg orally once daily at bedtime.",
+    "expected_document": "synthetic_cardio_note.txt",
+    "expected_page": 1,
+    "expected_drugs": [
+      {"drug": "Atorvastatin", "dosage": "40 mg", "frequency": "once daily"}
+    ],
+    "category": "Cardiology",
+    "difficulty": "Easy"
+  },
+  {
+    "id": "qa-037",
+    "question": "What is the recommended stroke prophylaxis dosage of Apixaban in a patient with CHA2DS2-VASc score = 2?",
+    "expected_answer": "Apixaban 5 mg orally twice daily.",
+    "expected_document": "synthetic_cardio_note.txt",
+    "expected_page": 1,
+    "expected_drugs": [
+      {"drug": "Apixaban", "dosage": "5 mg", "frequency": "twice daily"}
+    ],
+    "category": "Cardiology",
+    "difficulty": "Easy"
+  },
+  {
+    "id": "qa-038",
+    "question": "What heart rate and rhythm findings were recorded on physical exam in the cardiology consult note?",
+    "expected_answer": "Heart rate 88 bpm with an irregular rhythm consistent with atrial fibrillation.",
+    "expected_document": "synthetic_cardio_note.txt",
+    "expected_page": 1,
+    "expected_drugs": [],
+    "category": "Cardiology",
+    "difficulty": "Easy"
+  },
+  {
+    "id": "qa-039",
+    "question": "When should follow-up in the outpatient cardiology clinic take place after starting Apixaban?",
+    "expected_answer": "Follow-up is recommended in 4 weeks.",
+    "expected_document": "synthetic_cardio_note.txt",
+    "expected_page": 1,
+    "expected_drugs": [],
+    "category": "Cardiology",
+    "difficulty": "Easy"
+  },
+  {
+    "id": "qa-040",
+    "question": "What fever threshold requires immediate emergency room evaluation during adjuvant chemotherapy?",
+    "expected_answer": "Acute fever greater than 38.3 C warrants immediate emergency room evaluation for neutropenic sepsis.",
+    "expected_document": "synthetic_oncology_note.txt",
+    "expected_page": 1,
+    "expected_drugs": [],
+    "category": "Oncology",
+    "difficulty": "Medium"
+  },
+  {
+    "id": "qa-041",
+    "question": "What laboratory evaluations are mandatory before administering Cycle 2 of Doxorubicin chemotherapy?",
+    "expected_answer": "Repeat complete blood count (CBC) and comprehensive metabolic panel (CMP).",
+    "expected_document": "synthetic_oncology_note.txt",
+    "expected_page": 1,
+    "expected_drugs": [],
+    "category": "Oncology",
+    "difficulty": "Medium"
+  },
+  {
+    "id": "qa-042",
+    "question": "What surgical procedure had the breast oncology patient undergone prior to chemotherapy consultation?",
+    "expected_answer": "Right breast lumpectomy for invasive ductal carcinoma.",
+    "expected_document": "synthetic_oncology_note.txt",
+    "expected_page": 1,
+    "expected_drugs": [],
+    "category": "Oncology",
+    "difficulty": "Easy"
+  },
+  {
+    "id": "qa-043",
+    "question": "What was the hormone receptor and HER2 status in the oncology consultation?",
+    "expected_answer": "Hormone receptor-positive (HR+) and HER2-negative.",
+    "expected_document": "synthetic_oncology_note.txt",
+    "expected_page": 1,
+    "expected_drugs": [],
+    "category": "Oncology",
+    "difficulty": "Easy"
+  },
+  {
+    "id": "qa-044",
+    "question": "What adverse effect was experienced by the oncology patient following Cycle 1 of chemotherapy?",
+    "expected_answer": "Mild fatigue was reported without severe nausea or infectious complications.",
+    "expected_document": "synthetic_oncology_note.txt",
+    "expected_page": 1,
+    "expected_drugs": [],
+    "category": "Oncology",
+    "difficulty": "Easy"
+  },
+  {
+    "id": "qa-045",
+    "question": "What follow-up timeline was scheduled for the COPD patient in Chest Medicine OPD?",
+    "expected_answer": "Review in Chest Medicine OPD in 1 week.",
+    "expected_document": "synthetic_er_discharge.txt",
+    "expected_page": 1,
+    "expected_drugs": [],
+    "category": "Pulmonology",
+    "difficulty": "Easy"
+  },
+  {
+    "id": "qa-046",
+    "question": "What red-flag signs were documented for emergency re-evaluation in the COPD discharge plan?",
+    "expected_answer": "Worsening dyspnea or change of sputum to purulent consistency.",
+    "expected_document": "synthetic_er_discharge.txt",
+    "expected_page": 1,
+    "expected_drugs": [],
+    "category": "Emergency Medicine",
+    "difficulty": "Medium"
+  },
+  {
+    "id": "qa-047",
+    "question": "What was the blood pressure recorded on physical examination in the atrial fibrillation consultation?",
+    "expected_answer": "Blood pressure was 138/84 mmHg.",
+    "expected_document": "synthetic_cardio_note.txt",
+    "expected_page": 1,
+    "expected_drugs": [],
+    "category": "Cardiology",
+    "difficulty": "Easy"
+  },
+  {
+    "id": "qa-048",
+    "question": "How long had the cardiology consult patient experienced intermittent palpitations and exertion dyspnea?",
+    "expected_answer": "Over the past 3 weeks.",
+    "expected_document": "synthetic_cardio_note.txt",
+    "expected_page": 1,
+    "expected_drugs": [],
+    "category": "Cardiology",
+    "difficulty": "Easy"
+  },
+  {
+    "id": "qa-049",
+    "question": "What is the increased heart failure risk factor multiplier associated with atrial fibrillation?",
+    "expected_answer": "Atrial fibrillation is associated with a 3-fold increased risk of developing heart failure.",
+    "expected_document": "sample_afib_guideline.pdf",
+    "expected_page": 1,
+    "expected_drugs": [],
+    "category": "Cardiology",
+    "difficulty": "Easy"
+  },
+  {
+    "id": "qa-050",
+    "question": "What score in the CHA2DS2-VASc system is assigned to patients with vascular disease history?",
+    "expected_answer": "Vascular disease (such as prior myocardial infarction or peripheral artery disease) is assigned 1 point.",
+    "expected_document": "sample_afib_guideline.pdf",
+    "expected_page": 1,
+    "expected_drugs": [],
+    "category": "Cardiology",
+    "difficulty": "Easy"
+  }
+]

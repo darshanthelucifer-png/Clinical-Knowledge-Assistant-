@@ -1,0 +1,183 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-display: 'Outfit', 'Inter', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  /* Theme: Dark (Default Clinical Suite) */
+  --bg-main: #0a0f1d;
+  --bg-panel: #111827;
+  --bg-card: rgba(30, 41, 59, 0.7);
+  --bg-card-hover: rgba(51, 65, 85, 0.8);
+  --bg-input: #1e293b;
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-focus: #38bdf8;
+
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+
+  --primary: #0284c7;
+  --primary-hover: #0369a1;
+  --primary-glow: rgba(56, 189, 248, 0.25);
+
+  --accent-cyan: #06b6d4;
+  --accent-indigo: #6366f1;
+  --accent-emerald: #10b981;
+  --accent-amber: #f59e0b;
+  --accent-rose: #f43f5e;
+
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -2px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -4px rgba(0, 0, 0, 0.4);
+  --shadow-glow: 0 0 20px rgba(56, 189, 248, 0.15);
+}
+
+.light-theme {
+  --bg-main: #f8fafc;
+  --bg-panel: #ffffff;
+  --bg-card: #ffffff;
+  --bg-card-hover: #f1f5f9;
+  --bg-input: #f1f5f9;
+  --border-subtle: #e2e8f0;
+  --border-focus: #0284c7;
+
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+
+  --primary: #0284c7;
+  --primary-hover: #0369a1;
+  --primary-glow: rgba(2, 132, 199, 0.2);
+
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08);
+  --shadow-glow: 0 0 20px rgba(2, 132, 199, 0.1);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--bg-main);
+  color: var(--text-primary);
+  min-height: 100vh;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6, .font-display {
+  font-family: var(--font-display);
+}
+
+/* Glassmorphism */
+.glass-panel {
+  background: var(--bg-card);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border-subtle);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.2);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.4);
+}
+
+/* Animations */
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 10px rgba(56, 189, 248, 0.2);
+    border-color: rgba(56, 189, 248, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 25px rgba(56, 189, 248, 0.6);
+    border-color: rgba(56, 189, 248, 0.8);
+  }
+}
+
+@keyframes highlightFlash {
+  0% {
+    background-color: rgba(250, 204, 21, 0.45);
+    outline: 2px solid #eab308;
+  }
+  50% {
+    background-color: rgba(250, 204, 21, 0.7);
+    outline: 3px solid #facc15;
+  }
+  100% {
+    background-color: rgba(250, 204, 21, 0.35);
+    outline: 2px solid #ca8a04;
+  }
+}
+
+.citation-highlight-active {
+  animation: highlightFlash 1.5s ease-in-out infinite alternate;
+}
+
+/* Markdown typography styling in chat */
+.prose-clinical {
+  line-height: 1.65;
+  font-size: 0.95rem;
+}
+.prose-clinical p {
+  margin-bottom: 0.85rem;
+}
+.prose-clinical strong {
+  color: #38bdf8;
+  font-weight: 600;
+}
+.prose-clinical ul, .prose-clinical ol {
+  margin-left: 1.25rem;
+  margin-bottom: 0.85rem;
+}
+.prose-clinical li {
+  margin-bottom: 0.35rem;
+}
+.prose-clinical code {
+  font-family: var(--font-mono);
+  background: rgba(0, 0, 0, 0.3);
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  font-size: 0.85em;
+  color: #a5f3fc;
+  border: 1px solid rgba(56, 189, 248, 0.2);
+}
+.prose-clinical blockquote {
+  border-left: 3px solid #38bdf8;
+  padding-left: 0.85rem;
+  margin: 0.85rem 0;
+  font-style: italic;
+  color: var(--text-secondary);
+}
+
+/* Split Pane resizer handle */
+.resizer-handle {
+  width: 6px;
+  cursor: col-resize;
+  background: var(--border-subtle);
+  transition: background 0.2s, width 0.2s;
+  position: relative;
+  z-index: 40;
+}
+.resizer-handle:hover, .resizer-handle.dragging {
+  background: #38bdf8;
+  width: 8px;
+}

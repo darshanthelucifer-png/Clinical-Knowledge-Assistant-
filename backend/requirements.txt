@@ -1,0 +1,43 @@
+# ==============================================================================
+# ClinSaarthi AI - Backend Requirements (100% Free Tools / Open Source Stack)
+# ==============================================================================
+
+# Core Web Framework & API
+Django>=5.0.0,<5.2.0
+djangorestframework>=3.14.0
+djangorestframework-simplejwt>=5.3.0
+django-cors-headers>=4.3.0
+django-environ>=0.11.2
+dj-database-url>=2.1.0
+python-dotenv>=1.0.0
+pydantic>=2.6.0
+requests>=2.31.0
+httpx>=0.26.0
+
+# Asynchronous & Production Servers
+uvicorn[standard]>=0.27.0
+gunicorn>=21.2.0
+
+# Testing
+pytest>=8.0.0
+pytest-django>=4.8.0
+
+# Document Ingestion & Parsing (PDF, Columns, Tables, OCR fallback)
+PyMuPDF>=1.23.8
+pdfplumber>=0.10.3
+pytesseract>=0.3.10
+Pillow>=10.2.0
+
+# NLP, PII Masking & Medical Entity Recognition
+spacy>=3.7.2
+
+# Vector Store, Embeddings & RAG Retrieval
+chromadb>=0.4.22
+rank-bm25>=0.2.2
+sentence-transformers>=2.3.1
+huggingface_hub>=0.20.3
+
+# Agentic Orchestration & Verification
+langchain>=0.1.0
+langchain-community>=0.0.13
+langgraph>=0.0.20

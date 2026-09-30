@@ -1,0 +1,25 @@
+SYNTHETIC CLINICAL NOTE - FAKE SIMULATED DATA ONLY
+PATIENT NAME: Rajesh K. Patel
+AADHAAR: 4321 8765 2109
+DOB: 23-08-1980
+MRN: MRN-9910482
+PHONE: +91 98765 43210
+EMAIL: rajesh.patel@mockhealthmail.in
+ADDRESS: Flat 402, Shanti Heights, MG Road, Pune, MH 411001
+ATTENDING PHYSICIAN: Dr. Ananya Sen
+DEPARTMENT: Emergency Department Discharge Summary
+
+PRESENTING CONDITION:
+Acute exacerbation of chronic obstructive pulmonary disease (COPD) and bacterial bronchitis.
+
+HOSPITAL COURSE:
+Patient received nebulized Salbutamol 2.5 mg and Ipratropium bromide 0.5 mg every 4 hours, and IV Hydrocortisone 100 mg initially. Sputum culture revealed sensitivity to Azithromycin. Oxygen saturation stabilized at 94% on ambient air.
+
+DISCHARGE MEDICATIONS:
+1. Azithromycin 500 mg orally once daily for 5 days.
+2. Prednisolone 40 mg orally once daily for 5 days with tapering schedule.
+3. Formoterol / Budesonide (6/200 mcg) inhaler 2 puffs twice daily.
+
+DISCHARGE INSTRUCTIONS:
+- Review in Chest Medicine OPD in 1 week.
+- Call emergency if dyspnea worsens or sputum turns purulent.

@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: clinsaarthi-postgres
+    restart: always
+    environment:
+      POSTGRES_DB: clinsaarthi
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgrespassword
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d clinsaarthi"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: clinsaarthi-backend
+    restart: always
+    command: >
+      sh -c "python manage.py migrate &&
+             uvicorn config.asgi:application --host 0.0.0.0 --port 8000 --reload"
+    volumes:
+      - ./backend:/app
+      - ./data:/data
+    ports:
+      - "8000:8000"
+    environment:
+      - ENVIRONMENT=dev
+      - DEBUG=True
+      - DATABASE_URL=postgres://postgres:postgrespassword@db:5432/clinsaarthi
+      - DJANGO_SECRET_KEY=django-insecure-docker-dev-key-change-in-prod
+      - JWT_SECRET=jwt-docker-dev-secret-key-12345
+      - VECTOR_STORE_PROVIDER=chroma
+      - CHROMA_PERSIST_DIRECTORY=/data/chroma_db
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
