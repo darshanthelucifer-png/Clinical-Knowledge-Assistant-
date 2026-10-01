@@ -38,6 +38,9 @@ chroma_db/
 faiss_index/
 .cache/
 huggingface_cache/
+.pytest_cache/
+htmlcov/
+.coverage
 
 # Node / Frontend
 node_modules/

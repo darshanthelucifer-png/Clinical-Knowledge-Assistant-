@@ -124,7 +124,8 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 20,
     'DEFAULT_THROTTLE_CLASSES': [
         'rest_framework.throttling.AnonRateThrottle',
-        'rest_framework.throttling.UserRateThrottle'
+        'rest_framework.throttling.UserRateThrottle',
+        'rest_framework.throttling.ScopedRateThrottle',
     ],
     'DEFAULT_THROTTLE_RATES': {
         'anon': '60/min',
@@ -134,6 +135,11 @@ REST_FRAMEWORK = {
         'quiz': '40/min',
     }
 }
+
+# Baseline Security Headers & Clickjacking Protection
+X_FRAME_OPTIONS = 'DENY'
+SECURE_CONTENT_TYPE_NOSNIFF = True
+SECURE_BROWSER_XSS_FILTER = True
 
 # SimpleJWT Authentication Settings
 JWT_SECRET_KEY = env('JWT_SECRET', default=SECRET_KEY)

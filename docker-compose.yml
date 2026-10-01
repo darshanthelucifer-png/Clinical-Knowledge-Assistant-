@@ -1,10 +1,13 @@
 version: '3.8'
 
 services:
+  # ----------------------------------------------------------------------------
+  # PostgreSQL Relational Database
+  # ----------------------------------------------------------------------------
   db:
     image: postgres:15-alpine
-    container_name: clinsaarthi-postgres
-    restart: always
+    container_name: clinsaarthi-db
+    restart: unless-stopped
     environment:
       POSTGRES_DB: clinsaarthi
       POSTGRES_USER: postgres
@@ -19,31 +22,57 @@ services:
       timeout: 5s
       retries: 5
 
+  # ----------------------------------------------------------------------------
+  # Django ASGI Backend (DRF + Hybrid RAG + LangGraph + Uvicorn)
+  # ----------------------------------------------------------------------------
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
     container_name: clinsaarthi-backend
-    restart: always
-    command: >
-      sh -c "python manage.py migrate &&
-             uvicorn config.asgi:application --host 0.0.0.0 --port 8000 --reload"
-    volumes:
-      - ./backend:/app
-      - ./data:/data
-    ports:
-      - "8000:8000"
+    restart: unless-stopped
     environment:
-      - ENVIRONMENT=dev
-      - DEBUG=True
+      - ENVIRONMENT=prod
+      - DEBUG=False
       - DATABASE_URL=postgres://postgres:postgrespassword@db:5432/clinsaarthi
-      - DJANGO_SECRET_KEY=django-insecure-docker-dev-key-change-in-prod
-      - JWT_SECRET=jwt-docker-dev-secret-key-12345
+      - DJANGO_SECRET_KEY=django-insecure-prod-docker-key-clinsaarthi-2026
+      - JWT_SECRET=jwt-docker-prod-secret-clinsaarthi-98765
+      - ALLOWED_HOSTS=localhost,127.0.0.1,backend,frontend
+      - CORS_ALLOWED_ORIGINS=http://localhost,http://127.0.0.1,http://localhost:80,http://localhost:3000
       - VECTOR_STORE_PROVIDER=chroma
       - CHROMA_PERSIST_DIRECTORY=/data/chroma_db
+      - CONFIDENCE_THRESHOLD=0.50
+    volumes:
+      - chroma_data:/data/chroma_db
+      - media_data:/data/media
+    ports:
+      - "8000:8000"
     depends_on:
       db:
         condition: service_healthy
 
+  # ----------------------------------------------------------------------------
+  # React + Vite Single Page Application (Nginx Reverse Proxy & SSE Pass-Through)
+  # ----------------------------------------------------------------------------
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: clinsaarthi-frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "3000:80"
+    depends_on:
+      - backend
+
+# ------------------------------------------------------------------------------
+# Persistent Volume Declarations
+# ------------------------------------------------------------------------------
 volumes:
   postgres_data:
+    driver: local
+  chroma_data:
+    driver: local
+  media_data:
+    driver: local

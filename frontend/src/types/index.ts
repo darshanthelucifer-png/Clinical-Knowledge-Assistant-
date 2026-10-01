@@ -3,7 +3,8 @@
  * ClinSaarthi AI - Frontend TypeScript Domain Interfaces
  * ==============================================================================
  * Defines the strict type contracts for Messages, Citations, Spatial Bounding Boxes,
- * Drug Verification Results, Clinical Notes, and SSE Event Payloads.
+ * Drug Verification Results, Clinical Notes, Study Mode (Quizzes & Flashcards),
+ * and SSE Event Payloads.
  * ==============================================================================
  */
 
@@ -81,6 +82,96 @@ export interface NoteSummary {
   masked_content?: string;
   created_at: string;
 }
+
+// ------------------------------------------------------------------------------
+// Study Mode Contracts (Quizzes, Flashcards, Spaced Repetition, Analytics)
+// ------------------------------------------------------------------------------
+
+export interface QuizQuestion {
+  id: string;
+  question_text: string;
+  options: string[];
+  correct_option_index: number;
+  explanation: string;
+  source_reference: string;
+  page_number?: number;
+}
+
+export interface Quiz {
+  id: string;
+  title: string;
+  topic: string;
+  difficulty: 'EASY' | 'MEDIUM' | 'HARD';
+  questions_count: number;
+  questions: QuizQuestion[];
+  created_at: string;
+}
+
+export interface QuestionResult {
+  question_id: string;
+  question_text: string;
+  selected_option_index?: number;
+  selected_option_text: string;
+  correct_option_index: number;
+  correct_option_text: string;
+  is_correct: boolean;
+  explanation: string;
+  source_reference: string;
+  page_number?: number;
+}
+
+export interface QuizSubmissionResult {
+  session_id: string;
+  quiz_id: string;
+  quiz_title: string;
+  total_questions: number;
+  correct_answers: number;
+  score_percentage: number;
+  passed: boolean;
+  time_spent_seconds: number;
+  results: QuestionResult[];
+}
+
+export interface Flashcard {
+  id: string;
+  front: string;
+  back: string;
+  key_concept: string;
+  source_reference: string;
+  page_number?: number;
+  ease_factor?: number;
+  interval_days?: number;
+  repetitions?: number;
+  last_reviewed?: string;
+  next_review?: string;
+}
+
+export interface FlashcardSet {
+  id: string;
+  title: string;
+  topic: string;
+  cards_count: number;
+  cards: Flashcard[];
+  created_at: string;
+}
+
+export interface TopicAccuracy {
+  topic: string;
+  accuracy: number;
+  total_questions: number;
+}
+
+export interface StudyStats {
+  total_quizzes_completed: number;
+  average_quiz_score: number;
+  total_flashcards_reviewed: number;
+  total_study_time_minutes: number;
+  topics: TopicAccuracy[];
+}
+
+// ------------------------------------------------------------------------------
+// SSE Stream Event Payloads
+// ------------------------------------------------------------------------------
 
 export interface SSEStatusEvent {
   type: 'status';

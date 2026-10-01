@@ -30,6 +30,7 @@ from apps.documents.models import Document, Chunk
 from apps.qa.models import Conversation, Message, Citation, VerificationResult
 from ai.retriever import HybridRetriever
 from ai.llm import LLMClient
+from ai.prompt_guard import PromptGuard
 from services.verification_service import VerificationService
 
 class QAService:
@@ -112,6 +113,51 @@ class QAService:
         """
         def format_sse(payload: Dict[str, Any]) -> str:
             return f"data: {json.dumps(payload)}\n\n"
+
+        # Security: Prompt Guardrail Inspection
+        guard_res = PromptGuard.inspect(query)
+        if not guard_res.is_safe:
+            yield format_sse({
+                "type": "status",
+                "stage": "safety_guard",
+                "message": "Adversarial or unsupported prompt pattern detected by safety guardrails."
+            })
+            rejection_text = guard_res.rejection_message or PromptGuard.DEFAULT_REJECTION_MESSAGE
+            yield format_sse({"type": "token", "content": rejection_text})
+
+            with transaction.atomic():
+                conversation = None
+                if conversation_id:
+                    conversation = Conversation.objects.filter(id=conversation_id, user=user).first()
+                if not conversation:
+                    conversation = Conversation.objects.create(
+                        user=user,
+                        title=query[:60],
+                        mode=mode
+                    )
+
+                Message.objects.create(conversation=conversation, role=Message.Role.USER, content=query)
+                asst_msg = Message.objects.create(
+                    conversation=conversation,
+                    role=Message.Role.ASSISTANT,
+                    content=rejection_text,
+                    confidence_score=0.0,
+                    is_not_found=True,
+                    disclaimer=settings.DISCLAIMER_TEXT
+                )
+
+            yield format_sse({
+                "type": "done",
+                "conversation_id": str(conversation.id),
+                "message_id": str(asst_msg.id),
+                "is_not_found": True,
+                "confidence_score": 0.0,
+                "citations": [],
+                "disclaimer": settings.DISCLAIMER_TEXT
+            })
+            return
+
+        query = guard_res.sanitized_text
 
         # 1. Step 1: Query Understanding & Expansion
         yield format_sse({
@@ -333,6 +379,43 @@ class QAService:
         """
         Synchronous Q&A execution for REST API consumers.
         """
+        guard_res = PromptGuard.inspect(query)
+        if not guard_res.is_safe:
+            rejection_text = guard_res.rejection_message or PromptGuard.DEFAULT_REJECTION_MESSAGE
+            with transaction.atomic():
+                conversation = None
+                if conversation_id:
+                    conversation = Conversation.objects.filter(id=conversation_id, user=user).first()
+                if not conversation:
+                    conversation = Conversation.objects.create(
+                        user=user,
+                        title=query[:60],
+                        mode=mode
+                    )
+
+                Message.objects.create(conversation=conversation, role=Message.Role.USER, content=query)
+                asst_msg = Message.objects.create(
+                    conversation=conversation,
+                    role=Message.Role.ASSISTANT,
+                    content=rejection_text,
+                    confidence_score=0.0,
+                    is_not_found=True,
+                    disclaimer=settings.DISCLAIMER_TEXT
+                )
+
+            return {
+                "conversation_id": str(conversation.id),
+                "message_id": str(asst_msg.id),
+                "answer": rejection_text,
+                "is_not_found": True,
+                "confidence_score": 0.0,
+                "citations": [],
+                "verifications": [],
+                "disclaimer": settings.DISCLAIMER_TEXT
+            }
+
+        query = guard_res.sanitized_text
+
         doc_filter = [str(d) for d in (document_ids or [])]
         if note_id:
             nid = str(note_id)
@@ -445,6 +528,43 @@ class QAService:
         """
         Executes the LangGraph 8-node multi-step verification agent.
         """
+        guard_res = PromptGuard.inspect(query)
+        if not guard_res.is_safe:
+            rejection_text = guard_res.rejection_message or PromptGuard.DEFAULT_REJECTION_MESSAGE
+            with transaction.atomic():
+                conversation = None
+                if conversation_id:
+                    conversation = Conversation.objects.filter(id=conversation_id, user=user).first()
+                if not conversation:
+                    conversation = Conversation.objects.create(
+                        user=user,
+                        title=query[:60],
+                        mode=mode
+                    )
+
+                Message.objects.create(conversation=conversation, role=Message.Role.USER, content=query)
+                asst_msg = Message.objects.create(
+                    conversation=conversation,
+                    role=Message.Role.ASSISTANT,
+                    content=rejection_text,
+                    confidence_score=0.0,
+                    is_not_found=True,
+                    disclaimer=settings.DISCLAIMER_TEXT
+                )
+
+            return {
+                "conversation_id": str(conversation.id),
+                "message_id": str(asst_msg.id),
+                "answer": rejection_text,
+                "is_not_found": True,
+                "confidence_score": 0.0,
+                "citations": [],
+                "verifications": [],
+                "disclaimer": settings.DISCLAIMER_TEXT
+            }
+
+        query = guard_res.sanitized_text
+
         from ai.graph.graph import build_graph
 
         doc_filter = [str(d) for d in (document_ids or [])]

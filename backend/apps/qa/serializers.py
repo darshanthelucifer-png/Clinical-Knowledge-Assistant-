@@ -53,3 +53,14 @@ class AskQuestionInputSerializer(serializers.Serializer):
         help_text="Optional filter for specific documents"
     )
     note_id = serializers.UUIDField(required=False, allow_null=True)
+
+    def validate_question(self, value: str) -> str:
+        from ai.prompt_guard import PromptGuard
+        sanitized = PromptGuard.sanitize(value)
+        if len(sanitized) > PromptGuard.MAX_QUERY_LENGTH:
+            raise serializers.ValidationError(
+                f"Question exceeds maximum allowed length of {PromptGuard.MAX_QUERY_LENGTH} characters."
+            )
+        if len(sanitized) < PromptGuard.MIN_QUERY_LENGTH:
+            raise serializers.ValidationError("Question is too short or empty.")
+        return sanitized

@@ -36,6 +36,7 @@ class ClinicalNoteUploadView(APIView):
     saves sanitized note and isolated mapping, and returns masked note.
     """
     permission_classes = [permissions.IsAuthenticated]
+    throttle_scope = 'notes'
 
     def post(self, request, *args, **kwargs):
         serializer = ClinicalNoteUploadSerializer(data=request.data)
@@ -114,10 +115,16 @@ class ClinicalNoteDetailView(generics.RetrieveAPIView):
     """
     GET /api/v1/notes/<id>/
     Retrieves masked clinical note.
+    Access restricted to note uploader or system administrators.
     """
-    queryset = ClinicalNote.objects.all()
     serializer_class = ClinicalNoteSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_admin_role:
+            return ClinicalNote.objects.all()
+        return ClinicalNote.objects.filter(uploader=user)
 
 
 class ClinicalNoteDiffView(APIView):

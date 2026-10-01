@@ -39,6 +39,7 @@ class RetrieveDebugView(APIView):
     top-5 chunks with comprehensive score and latency telemetry when DEBUG_RAG=true.
     """
     permission_classes = [permissions.IsAuthenticated]
+    throttle_scope = 'ask'
 
     def post(self, request, *args, **kwargs):
         query = request.data.get('query', '')
@@ -68,6 +69,7 @@ class AskQuestionView(APIView):
     Supports Server-Sent Events (SSE) streaming (default) or synchronous JSON.
     """
     permission_classes = [permissions.IsAuthenticated]
+    throttle_scope = 'ask'
 
     def post(self, request, *args, **kwargs):
         serializer = AskQuestionInputSerializer(data=request.data)

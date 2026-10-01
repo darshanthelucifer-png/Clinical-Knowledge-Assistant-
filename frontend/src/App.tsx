@@ -3,6 +3,7 @@ import { Header } from './components/Header';
 import { SplitPane } from './components/SplitPane';
 import { ChatPanel } from './components/Chat/ChatPanel';
 import { SourceViewer } from './components/Viewer/SourceViewer';
+import { StudyModeView } from './components/Study/StudyModeView';
 import { useAuth } from './hooks/useAuth';
 import type { Message, Citation, AppMode } from './types';
 import { streamClinicalQA } from './services/sseStream';
@@ -314,17 +315,21 @@ export const App: React.FC = () => {
       <SplitPane
         initialLeftPercentage={58}
         left={
-          <ChatPanel
-            messages={messages}
-            isStreaming={isStreaming}
-            streamingStatus={streamingStatus}
-            activeMode={activeMode}
-            activeNoteTitle={activeNoteTitle || undefined}
-            onSendMessage={handleSendMessage}
-            onClearChat={handleClearChat}
-            activeCitation={activeCitation}
-            onSelectCitation={setActiveCitation}
-          />
+          activeMode === 'study_mode' ? (
+            <StudyModeView onSelectCitation={setActiveCitation} />
+          ) : (
+            <ChatPanel
+              messages={messages}
+              isStreaming={isStreaming}
+              streamingStatus={streamingStatus}
+              activeMode={activeMode}
+              activeNoteTitle={activeNoteTitle || undefined}
+              onSendMessage={handleSendMessage}
+              onClearChat={handleClearChat}
+              activeCitation={activeCitation}
+              onSelectCitation={setActiveCitation}
+            />
+          )
         }
         right={
           <SourceViewer
