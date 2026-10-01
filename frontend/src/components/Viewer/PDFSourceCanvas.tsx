@@ -6,7 +6,12 @@ import {
   ZoomOut,
   ChevronLeft,
   ChevronRight,
+  ShieldCheck,
 } from 'lucide-react';
+import {
+  GUIDELINE_PAGE_DATA,
+  detectGuidelineDomain,
+} from './guidelinePageData';
 
 interface PDFSourceCanvasProps {
   activeCitation?: Citation | null;
@@ -18,22 +23,36 @@ interface PDFSourceCanvasProps {
 
 export const PDFSourceCanvas: React.FC<PDFSourceCanvasProps> = ({
   activeCitation,
-  documentTitle = 'ESC/AHA 2026 Atrial Fibrillation Guidelines',
-  currentPage = 1,
-  totalPages = 18,
+  documentTitle = '2026 AHA/ACC/HRS Guideline for the Management of Atrial Fibrillation',
+  currentPage: propPage,
+  totalPages: propTotalPages,
   onPageChange,
 }) => {
+  const [internalPage, setInternalPage] = useState<number>(1);
   const [zoom, setZoom] = useState<number>(100);
 
-  const displayPage = activeCitation?.page_number || currentPage;
+  // Auto-detect domain
+  const effectiveTitle = activeCitation?.source_title || documentTitle;
+  const domain = detectGuidelineDomain(effectiveTitle);
+  const guideline = GUIDELINE_PAGE_DATA[domain] || GUIDELINE_PAGE_DATA.afib;
+
+  const totalPages = propTotalPages || guideline.totalPages || 4;
+  const displayPage = activeCitation?.page_number || propPage || internalPage;
+
+  const handlePageChange = (newPage: number) => {
+    setInternalPage(newPage);
+    if (onPageChange) onPageChange(newPage);
+  };
 
   const handlePrev = () => {
-    if (displayPage > 1 && onPageChange) onPageChange(displayPage - 1);
+    if (displayPage > 1) handlePageChange(displayPage - 1);
   };
 
   const handleNext = () => {
-    if (displayPage < totalPages && onPageChange) onPageChange(displayPage + 1);
+    if (displayPage < totalPages) handlePageChange(displayPage + 1);
   };
+
+  const pageData = guideline.pages[displayPage] || guideline.pages[1];
 
   return (
     <div
@@ -54,7 +73,7 @@ export const PDFSourceCanvas: React.FC<PDFSourceCanvasProps> = ({
           alignItems: 'center',
           justifyContent: 'space-between',
           borderBottom: '1px solid var(--border-subtle)',
-          background: 'rgba(15, 23, 42, 0.6)',
+          background: 'rgba(15, 23, 42, 0.75)',
           fontSize: '0.78rem',
         }}
       >
@@ -67,10 +86,24 @@ export const PDFSourceCanvas: React.FC<PDFSourceCanvasProps> = ({
               whiteSpace: 'nowrap',
               overflow: 'hidden',
               textOverflow: 'ellipsis',
-              maxWidth: '220px',
+              maxWidth: '240px',
+            }}
+            title={effectiveTitle}
+          >
+            {guideline.shortTitle || effectiveTitle}
+          </span>
+          <span
+            style={{
+              fontSize: '0.68rem',
+              fontWeight: 600,
+              padding: '0.12rem 0.45rem',
+              borderRadius: '9999px',
+              background: 'rgba(2, 132, 199, 0.2)',
+              color: '#38bdf8',
+              border: '1px solid rgba(56, 189, 248, 0.3)',
             }}
           >
-            {activeCitation?.source_title || documentTitle}
+            {guideline.specialty}
           </span>
         </div>
 
@@ -81,28 +114,30 @@ export const PDFSourceCanvas: React.FC<PDFSourceCanvasProps> = ({
             <button
               onClick={handlePrev}
               disabled={displayPage <= 1}
+              title="Previous Page"
               style={{
                 background: 'transparent',
                 border: '1px solid var(--border-subtle)',
                 borderRadius: '4px',
-                color: 'var(--text-secondary)',
+                color: displayPage <= 1 ? 'var(--text-muted)' : 'var(--text-secondary)',
                 padding: '0.2rem',
                 cursor: displayPage <= 1 ? 'not-allowed' : 'pointer',
               }}
             >
               <ChevronLeft size={14} />
             </button>
-            <span style={{ fontSize: '0.74rem', color: 'var(--text-secondary)', padding: '0 0.2rem' }}>
+            <span style={{ fontSize: '0.74rem', color: 'var(--text-secondary)', padding: '0 0.3rem', fontWeight: 600 }}>
               p. {displayPage} / {totalPages}
             </span>
             <button
               onClick={handleNext}
               disabled={displayPage >= totalPages}
+              title="Next Page"
               style={{
                 background: 'transparent',
                 border: '1px solid var(--border-subtle)',
                 borderRadius: '4px',
-                color: 'var(--text-secondary)',
+                color: displayPage >= totalPages ? 'var(--text-muted)' : 'var(--text-secondary)',
                 padding: '0.2rem',
                 cursor: displayPage >= totalPages ? 'not-allowed' : 'pointer',
               }}
@@ -117,6 +152,7 @@ export const PDFSourceCanvas: React.FC<PDFSourceCanvasProps> = ({
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.2rem' }}>
             <button
               onClick={() => setZoom(Math.max(75, zoom - 15))}
+              title="Zoom Out"
               style={{
                 background: 'transparent',
                 border: 'none',
@@ -129,6 +165,7 @@ export const PDFSourceCanvas: React.FC<PDFSourceCanvasProps> = ({
             <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>{zoom}%</span>
             <button
               onClick={() => setZoom(Math.min(150, zoom + 15))}
+              title="Zoom In"
               style={{
                 background: 'transparent',
                 border: 'none',
@@ -152,18 +189,18 @@ export const PDFSourceCanvas: React.FC<PDFSourceCanvasProps> = ({
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'flex-start',
-          background: 'rgba(0, 0, 0, 0.4)',
+          background: 'rgba(0, 0, 0, 0.45)',
         }}
       >
         <div
           style={{
-            width: `${Math.round(560 * (zoom / 100))}px`,
-            minHeight: `${Math.round(760 * (zoom / 100))}px`,
+            width: `${Math.round(580 * (zoom / 100))}px`,
+            minHeight: `${Math.round(780 * (zoom / 100))}px`,
             background: '#ffffff',
             color: '#1e293b',
-            padding: '2rem',
+            padding: '2.2rem',
             borderRadius: '4px',
-            boxShadow: '0 8px 30px rgba(0, 0, 0, 0.6)',
+            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.7)',
             position: 'relative',
             fontSize: `${0.82 * (zoom / 100)}rem`,
             lineHeight: 1.5,
@@ -178,103 +215,139 @@ export const PDFSourceCanvas: React.FC<PDFSourceCanvasProps> = ({
               marginBottom: '1rem',
               display: 'flex',
               justifyContent: 'space-between',
-              fontSize: '0.7rem',
+              fontSize: '0.68rem',
               color: '#64748b',
               fontFamily: 'sans-serif',
             }}
           >
-            <span>European Heart Journal (2026) 47, 1024-1068</span>
-            <span>CLINICAL PRACTICE GUIDELINES</span>
+            <span>{pageData.headerJournal}</span>
+            <span style={{ fontWeight: 600, color: '#0369a1' }}>CLINICAL PRACTICE GUIDELINE</span>
           </div>
 
-          <h3 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '0.5rem', color: '#0f172a' }}>
-            Section 4.2: Direct Oral Anticoagulant (DOAC) Dosing & Renal Function
+          <h3
+            style={{
+              fontSize: '0.96rem',
+              fontWeight: 700,
+              marginBottom: '0.75rem',
+              color: '#0f172a',
+              fontFamily: 'sans-serif',
+              borderLeft: '3px solid #0284c7',
+              paddingLeft: '0.5rem',
+            }}
+          >
+            {activeCitation && activeCitation.section_title
+              ? activeCitation.section_title
+              : pageData.sectionTitle}
           </h3>
 
-          {/* 2-Column Mock Layout */}
+          {/* 2-Column Standard A4 Layout */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem' }}>
             {/* Column 1 */}
             <div>
-              <p style={{ marginBottom: '0.8rem', textAlign: 'justify' }}>
-                Oral anticoagulation is strongly recommended for stroke prevention in non-valvular atrial
-                fibrillation with a CHA2DS2-VASc score ≥2 in men and ≥3 in women. Direct oral
-                anticoagulants (DOACs)—including apixaban, dabigatran, edoxaban, and rivaroxaban—are
-                preferred over vitamin K antagonists (warfarin).
-              </p>
+              {pageData.col1Paragraphs.map((para, idx) => (
+                <p key={idx} style={{ marginBottom: '0.75rem', textAlign: 'justify' }}>
+                  {para}
+                </p>
+              ))}
 
-              {/* Cited Passage Highlight Envelope */}
-              <div
-                className={activeCitation ? 'citation-highlight-active' : ''}
-                style={{
-                  padding: '0.5rem',
-                  borderRadius: '4px',
-                  background: activeCitation ? 'rgba(250, 204, 21, 0.35)' : '#fef08a',
-                  border: '1px dashed #ca8a04',
-                  marginBottom: '0.8rem',
-                  position: 'relative',
-                }}
-              >
+              {/* Cited Passage Highlight Envelope if active */}
+              {activeCitation && (
                 <div
+                  className="citation-highlight-active"
                   style={{
-                    position: 'absolute',
-                    top: '-8px',
-                    left: '6px',
-                    background: '#ca8a04',
-                    color: '#ffffff',
-                    fontSize: '0.62rem',
-                    fontWeight: 700,
-                    padding: '0.05rem 0.35rem',
-                    borderRadius: '3px',
-                    fontFamily: 'sans-serif',
+                    padding: '0.55rem',
+                    borderRadius: '4px',
+                    background: 'rgba(250, 204, 21, 0.25)',
+                    border: '1.5px dashed #ca8a04',
+                    marginBottom: '0.75rem',
+                    position: 'relative',
+                    boxShadow: '0 0 15px rgba(250, 204, 21, 0.3)',
                   }}
                 >
-                  CITED PASSAGE [{activeCitation?.citation_index || 1}]
+                  <div
+                    style={{
+                      position: 'absolute',
+                      top: '-9px',
+                      left: '8px',
+                      background: '#ca8a04',
+                      color: '#ffffff',
+                      fontSize: '0.62rem',
+                      fontWeight: 700,
+                      padding: '0.05rem 0.4rem',
+                      borderRadius: '3px',
+                      fontFamily: 'sans-serif',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.2rem',
+                    }}
+                  >
+                    <ShieldCheck size={10} />
+                    CITED PASSAGE [{activeCitation.citation_index}] (p. {activeCitation.page_number})
+                  </div>
+                  <p
+                    style={{
+                      fontWeight: 600,
+                      color: '#713f12',
+                      marginTop: '4px',
+                      lineHeight: 1.45,
+                    }}
+                  >
+                    "{activeCitation.highlight_text}"
+                  </p>
                 </div>
-                <p style={{ fontWeight: 600, color: '#854d0e', marginTop: '4px' }}>
-                  {activeCitation?.highlight_text ||
-                    'For non-valvular atrial fibrillation, Rivaroxaban 20 mg once daily with the evening meal is recommended for patients with normal renal function (CrCl ≥50 mL/min). In patients with moderate renal impairment (CrCl 15–49 mL/min), reduce dose to 15 mg once daily.'}
-                </p>
-              </div>
-
-              <p style={{ textAlign: 'justify' }}>
-                Routine coagulation monitoring is not required for DOACs. However, annual assessment
-                of renal function (creatinine clearance via Cockcroft-Gault) and liver function is
-                mandatory in all chronic patients.
-              </p>
+              )}
             </div>
 
             {/* Column 2 */}
             <div>
-              <p style={{ marginBottom: '0.8rem', textAlign: 'justify' }}>
-                Dabigatran is dosed at 150 mg twice daily, with a dose reduction to 110 mg twice daily in
-                patients aged ≥80 years or those receiving concomitant verapamil. Apixaban is administered
-                at 5 mg twice daily, with reduction to 2.5 mg twice daily if any two criteria are met: age
-                ≥80 years, body weight ≤60 kg, or serum creatinine ≥1.5 mg/dL.
-              </p>
+              {pageData.col2Paragraphs.map((para, idx) => (
+                <p key={idx} style={{ marginBottom: '0.75rem', textAlign: 'justify', whiteSpace: 'pre-line' }}>
+                  {para}
+                </p>
+              ))}
 
-              <div
-                style={{
-                  border: '1px solid #cbd5e1',
-                  borderRadius: '4px',
-                  padding: '0.45rem',
-                  background: '#f8fafc',
-                  marginBottom: '0.8rem',
-                }}
-              >
-                <div style={{ fontWeight: 700, fontSize: '0.7rem', marginBottom: '0.2rem', color: '#0f172a' }}>
-                  Table 4.1: Renal Dose Reductions
+              {/* Optional Table */}
+              {pageData.table && (
+                <div
+                  style={{
+                    border: '1px solid #94a3b8',
+                    borderRadius: '4px',
+                    padding: '0.55rem',
+                    background: '#f8fafc',
+                    marginBottom: '0.75rem',
+                  }}
+                >
+                  <div
+                    style={{
+                      fontWeight: 700,
+                      fontSize: '0.7rem',
+                      marginBottom: '0.35rem',
+                      color: '#0f172a',
+                      fontFamily: 'sans-serif',
+                      borderBottom: '1px solid #cbd5e1',
+                      paddingBottom: '0.2rem',
+                    }}
+                  >
+                    {pageData.table.title}
+                  </div>
+                  <div style={{ fontSize: '0.66rem', color: '#334155', fontFamily: 'sans-serif' }}>
+                    {pageData.table.rows.map((r, i) => (
+                      <div
+                        key={i}
+                        style={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          padding: '0.15rem 0',
+                          borderBottom: i < pageData.table!.rows.length - 1 ? '1px dotted #e2e8f0' : 'none',
+                        }}
+                      >
+                        <span style={{ fontWeight: 600, color: '#1e293b' }}>{r.label}:</span>
+                        <span style={{ color: '#475569', textAlign: 'right', marginLeft: '0.5rem' }}>{r.value}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-                <div style={{ fontSize: '0.66rem', color: '#334155' }}>
-                  • CrCl &gt;50 mL/min: Rivaroxaban 20 mg qd<br />
-                  • CrCl 15-49 mL/min: Rivaroxaban 15 mg qd<br />
-                  • CrCl &lt;15 mL/min: Not recommended
-                </div>
-              </div>
-
-              <p style={{ textAlign: 'justify' }}>
-                In patients with active serious bleeding, DOAC-specific reversal agents (idarucizumab for
-                dabigatran, andexanet alfa for apixaban and rivaroxaban) should be initiated without delay.
-              </p>
+              )}
             </div>
           </div>
 
@@ -283,8 +356,8 @@ export const PDFSourceCanvas: React.FC<PDFSourceCanvasProps> = ({
             style={{
               position: 'absolute',
               bottom: '1rem',
-              left: '2rem',
-              right: '2rem',
+              left: '2.2rem',
+              right: '2.2rem',
               display: 'flex',
               justifyContent: 'space-between',
               borderTop: '1px solid #e2e8f0',
@@ -294,8 +367,9 @@ export const PDFSourceCanvas: React.FC<PDFSourceCanvasProps> = ({
               fontFamily: 'sans-serif',
             }}
           >
-            <span>ESC/AHA Guidelines 2026</span>
-            <span>Page {displayPage}</span>
+            <span>{guideline.shortTitle}</span>
+            <span>Evidence Grade: Class I, Level A</span>
+            <span>Page {displayPage} of {totalPages}</span>
           </div>
         </div>
       </div>

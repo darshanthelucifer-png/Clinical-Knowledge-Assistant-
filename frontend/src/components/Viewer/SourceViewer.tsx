@@ -8,6 +8,7 @@ interface SourceViewerProps {
   activeCitation?: Citation | null;
   activeMode: AppMode;
   documentTitle?: string;
+  totalPages?: number;
   onSelectNoteForQA?: (noteId: string, noteTitle: string) => void;
 }
 
@@ -15,6 +16,7 @@ export const SourceViewer: React.FC<SourceViewerProps> = ({
   activeCitation,
   activeMode,
   documentTitle,
+  totalPages,
   onSelectNoteForQA,
 }) => {
   const [tab, setTab] = useState<'pdf' | 'notes'>(activeMode === 'clinical_note_qa' ? 'notes' : 'pdf');
@@ -88,6 +90,7 @@ export const SourceViewer: React.FC<SourceViewerProps> = ({
           <PDFSourceCanvas
             activeCitation={activeCitation}
             documentTitle={documentTitle}
+            totalPages={totalPages}
           />
         ) : (
           <NoteDiffViewer onSelectNoteForQA={onSelectNoteForQA} />

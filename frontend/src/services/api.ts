@@ -77,7 +77,17 @@ export const GuidelineService = {
       const res = await fetch('/api/v1/documents/', { headers });
       if (!res.ok) return this.getDemoDocuments();
       const data = await res.json();
-      return Array.isArray(data) ? data : data.results || [];
+      const list = Array.isArray(data) ? data : data.results || [];
+      if (!list.length) return this.getDemoDocuments();
+      return list.map((d: any) => ({
+        id: String(d.id),
+        title: d.title,
+        file_name: d.file ? d.file.split('/').pop() : 'guideline.pdf',
+        total_pages: d.total_pages || 4,
+        total_chunks: d.chunks_count || 5,
+        status: (d.is_active !== false ? 'INDEXED' : 'PENDING') as 'INDEXED' | 'PENDING',
+        uploaded_at: d.created_at || new Date().toISOString(),
+      }));
     } catch {
       return this.getDemoDocuments();
     }
@@ -87,14 +97,78 @@ export const GuidelineService = {
     return [
       {
         id: 'afib-2026-guideline',
-        title: 'ESC/AHA 2026 Clinical Guideline for Atrial Fibrillation',
-        file_name: 'sample_afib_guideline.pdf',
-        total_pages: 18,
-        total_chunks: 42,
+        title: '2026 AHA/ACC/HRS Guideline for the Management of Atrial Fibrillation',
+        file_name: 'guideline_cardiology_afib.pdf',
+        total_pages: 4,
+        total_chunks: 5,
         status: 'INDEXED',
-        uploaded_at: '2026-09-30T10:00:00Z',
+        uploaded_at: '2026-10-01T10:00:00Z',
+      },
+      {
+        id: 'diabetes-2026-guideline',
+        title: '2026 ADA Standards of Care in Diabetes: Type 2 Diabetes Management',
+        file_name: 'guideline_endocrinology_diabetes.pdf',
+        total_pages: 4,
+        total_chunks: 5,
+        status: 'INDEXED',
+        uploaded_at: '2026-10-01T10:00:00Z',
+      },
+      {
+        id: 'htn-2026-guideline',
+        title: '2026 ACC/AHA Practice Guideline for the Prevention and Management of High Blood Pressure',
+        file_name: 'guideline_hypertension_cardiology.pdf',
+        total_pages: 4,
+        total_chunks: 4,
+        status: 'INDEXED',
+        uploaded_at: '2026-10-01T10:00:00Z',
+      },
+      {
+        id: 'copd-2026-guideline',
+        title: '2026 GOLD Global Strategy for the Diagnosis and Management of COPD',
+        file_name: 'guideline_pulmonology_copd.pdf',
+        total_pages: 3,
+        total_chunks: 3,
+        status: 'INDEXED',
+        uploaded_at: '2026-10-01T10:00:00Z',
+      },
+      {
+        id: 'cap-2026-guideline',
+        title: '2026 IDSA/ATS Guideline for Community-Acquired Pneumonia (CAP)',
+        file_name: 'guideline_infectious_pneumonia.pdf',
+        total_pages: 3,
+        total_chunks: 3,
+        status: 'INDEXED',
+        uploaded_at: '2026-10-01T10:00:00Z',
       },
     ];
+  },
+
+  async uploadDocument(file: File, title?: string): Promise<DocumentSummary> {
+    const token = AuthService.getToken();
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('title', title || file.name.replace(/\.[^/.]+$/, ''));
+    const headers: Record<string, string> = {};
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+
+    const res = await fetch('/api/v1/documents/', {
+      method: 'POST',
+      headers,
+      body: formData,
+    });
+    if (!res.ok) {
+      throw new Error(`Failed to upload guideline: ${res.statusText}`);
+    }
+    const d = await res.json();
+    return {
+      id: String(d.id),
+      title: d.title,
+      file_name: d.file ? d.file.split('/').pop() : file.name,
+      total_pages: d.total_pages || 1,
+      total_chunks: d.chunks_count || 1,
+      status: 'INDEXED',
+      uploaded_at: d.created_at || new Date().toISOString(),
+    };
   },
 };
 
