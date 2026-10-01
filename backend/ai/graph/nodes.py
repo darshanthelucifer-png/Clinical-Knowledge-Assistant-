@@ -107,7 +107,7 @@ def generate_node(state: AgentState) -> Dict[str, Any]:
     # Format context passages
     context_lines = []
     for idx, chk in enumerate(chunks, start=1):
-        context_lines.append(f"[{idx}] {chk.get('content', '')}")
+        context_lines.append(f"[Chunk {idx}] {chk.get('content', '')}")
     context_str = "\n\n".join(context_lines)
 
     # Inject repair instructions if this is a self-correction pass

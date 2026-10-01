@@ -63,9 +63,10 @@ COMMON_DRUGS = [
     "Amiodarone", "Metoprolol", "Diltiazem", "Digoxin", "Verapamil",
     "Bisoprolol", "Carvedilol", "Atorvastatin", "Rosuvastatin", "Aspirin",
     "Clopidogrel", "Ticagrelor", "Heparin", "Enoxaparin", "Fondaparinux",
-    "Lisinopril", "Ramipril", "Losartan", "Valsartan", "Sacubitril",
+    "Lisinopril", "Ramipril", "Losartan", "Valsartan", "Sacubitril", "Amlodipine",
     "Furosemide", "Spironolactone", "Eplerenone", "Empagliflozin", "Dapagliflozin",
-    "Metformin", "Insulin", "Levothyroxine", "Omeprazole", "Pantoprazole",
+    "Semaglutide", "Metformin", "Insulin", "Levothyroxine", "Omeprazole", "Pantoprazole",
+    "Tiotropium", "Formoterol", "Prednisone", "Amoxicillin", "Azithromycin", "Doxycycline",
     "Cisplatin", "Paclitaxel", "Pembrolizumab", "Trastuzumab", "Doxorubicin"
 ]
 

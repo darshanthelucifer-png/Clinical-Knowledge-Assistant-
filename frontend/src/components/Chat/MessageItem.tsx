@@ -123,7 +123,7 @@ export const MessageItem: React.FC<MessageItemProps> = ({
             )}
           </div>
 
-          {!isUser && (
+          {!isUser && (message.confidence_score !== undefined && message.confidence_score !== null || message.is_not_found) && (
             <ConfidenceMeter
               score={message.confidence_score}
               isNotFound={message.is_not_found}

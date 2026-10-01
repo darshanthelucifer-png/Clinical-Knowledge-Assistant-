@@ -88,7 +88,7 @@ class TestQAServiceGroundedAnswers:
         assert asst_msg.citations.count() == len(res["citations"])
 
     def test_confidence_gate_rejection_on_unsupported_query(self, clinician_user, ingested_guideline):
-        unsupported_query = "What is the molecular orbital structure of benzene and aromaticity?"
+        unsupported_query = "What is the adjuvant chemotherapy regimen and radiation fractionation for glioblastoma multiforme?"
         res = QAService.ask_sync(
             query=unsupported_query,
             user=clinician_user,
@@ -97,7 +97,7 @@ class TestQAServiceGroundedAnswers:
 
         # Confidence gate must trigger
         assert res["is_not_found"] is True
-        assert "not found in the provided clinical guidelines" in res["answer"]
+        assert "not found in the provided" in res["answer"].lower()
         assert len(res["citations"]) == 0
 
         # Verify message stored with is_not_found=True

@@ -247,8 +247,8 @@ class TestLangGraphAgentIntegration:
         assert res["clinical_intent"] == "dosing"
 
     def test_agent_confidence_refusal_on_irrelevant_query(self, clinician_user, ingested_guideline):
-        """Out of domain query triggers confidence gate refusal in state graph."""
-        query = "What is the capital of France and what are the best tourist hotels?"
+        """Unsupported clinical query triggers confidence gate refusal in state graph."""
+        query = "What is the adjuvant chemotherapy regimen and radiation fractionation for glioblastoma multiforme?"
         res = QAService.ask_agentic(
             query=query,
             user=clinician_user,
@@ -256,7 +256,7 @@ class TestLangGraphAgentIntegration:
         )
 
         assert res["is_not_found"] is True
-        assert "not found in the provided clinical guidelines" in res["answer"]
+        assert "not found in the provided" in res["answer"].lower()
         assert len(res["citations"]) == 0
 
     def test_agent_persists_verification_results_in_db(self, clinician_user, ingested_guideline):

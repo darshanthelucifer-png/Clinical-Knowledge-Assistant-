@@ -113,8 +113,11 @@ class HybridRetriever:
             bm25 = BM25Okapi(tokenized_corpus)
             tokenized_query = self.tokenize_bm25(query)
             scores = bm25.get_scores(tokenized_query)
-
-            scored = list(zip(corpus_chunks, scores))
+            max_s = max(scores, default=0.0)
+            if max_s <= 0.0:
+                query_words = set(tokenized_query)
+                scores = [float(len(query_words.intersection(set(doc)))) for doc in tokenized_corpus]
+            scored = list(zip(corpus_chunks, [max(0.0, float(s)) for s in scores]))
             # Sort descending by BM25 score
             scored.sort(key=lambda x: x[1], reverse=True)
             return [(item, float(score)) for item, score in scored[:k]]
@@ -202,20 +205,26 @@ class HybridRetriever:
         for item in candidates:
             chunk = item["chunk"]
             text = chunk["content"]
-            dense_s = item.get("dense_score", 0.5)
-            bm25_s = item.get("bm25_score", 0.0)
+            dense_s = item.get("dense_score", 0.0)
+            bm25_s = max(0.0, item.get("bm25_score", 0.0))
 
             # Combined semantic + lexical cross-encoder approximation
             chunk_tokens = set(cls.tokenize_bm25(text))
             overlap_count = len(query_tokens.intersection(chunk_tokens))
             lexical_overlap_ratio = overlap_count / max(1, len(query_tokens))
 
+            # If chunk was identified through strong lexical BM25 matching, factor BM25 strength into baseline
+            effective_dense = max(dense_s, min(0.85, bm25_s / 6.0) if bm25_s > 0 else 0.0)
+
             # Rerank score: if there is positive lexical overlap, blend dense + overlap.
             # If zero content terms match, penalize dense score to trigger confidence gate.
             if lexical_overlap_ratio > 0:
-                rerank_score = (dense_s * 0.55) + (min(1.0, lexical_overlap_ratio) * 0.45)
+                if effective_dense > 0:
+                    rerank_score = (effective_dense * 0.50) + (min(1.0, lexical_overlap_ratio) * 0.50)
+                else:
+                    rerank_score = min(0.95, lexical_overlap_ratio * 1.0)
             else:
-                rerank_score = dense_s * 0.35
+                rerank_score = dense_s * 0.25
 
             rerank_score = round(min(1.0, max(0.0, rerank_score)), 4)
 
@@ -245,49 +254,50 @@ class HybridRetriever:
         dense_results = self._dense_search(query, k=self.top_dense, document_filter=document_filter)
         t_dense = (time.perf_counter() - t0) * 1000
 
-        # Step 2: Retrieve candidate pool from DB if vector store has fewer results
+        # Step 2: Retrieve candidate pool from DB for BM25 lexical ranking
         t1 = time.perf_counter()
         candidate_chunks: List[Dict[str, Any]] = [c for c, _ in dense_results]
+        seen_chunk_ids = {c["chunk_id"] for c in candidate_chunks}
 
-        # If candidates are fewer than 10, load local guideline and note chunks from DB for BM25 pool
-        if len(candidate_chunks) < 10:
-            db_chunks_query = Chunk.objects.all()
+        db_chunks_query = Chunk.objects.all()
+        if document_filter:
+            db_chunks_query = db_chunks_query.filter(document_id__in=document_filter)
+        for chk in db_chunks_query[:100]:
+            cid = str(chk.id)
+            if cid not in seen_chunk_ids:
+                candidate_chunks.append({
+                    "chunk_id": cid,
+                    "content": chk.content,
+                    "document_id": str(chk.document_id),
+                    "page_number": chk.page_number,
+                    "section_title": chk.section_title,
+                    "token_count": chk.token_count,
+                    "bounding_box": chk.bounding_box
+                })
+                seen_chunk_ids.add(cid)
+
+        # Also check ClinicalNote records if note_id was in document_filter
+        try:
+            from apps.notes.models import ClinicalNote
+            notes_query = ClinicalNote.objects.all()
             if document_filter:
-                db_chunks_query = db_chunks_query.filter(document_id__in=document_filter)
-            for chk in db_chunks_query[:50]:
-                if not any(c["chunk_id"] == str(chk.id) for c in candidate_chunks):
-                    candidate_chunks.append({
-                        "chunk_id": str(chk.id),
-                        "content": chk.content,
-                        "document_id": str(chk.document_id),
-                        "page_number": chk.page_number,
-                        "section_title": chk.section_title,
-                        "token_count": chk.token_count,
-                        "bounding_box": chk.bounding_box
-                    })
-
-            # Also check ClinicalNote records if note_id was in document_filter
-            try:
-                from apps.notes.models import ClinicalNote
-                notes_query = ClinicalNote.objects.all()
-                if document_filter:
-                    notes_query = notes_query.filter(id__in=document_filter)
-                for note_obj in notes_query[:10]:
-                    paragraphs = [p.strip() for p in note_obj.masked_content.split('\n\n') if p.strip()]
-                    for i, p in enumerate(paragraphs, start=1):
-                        cid = f"note_{note_obj.id}_{i}"
-                        if not any(c["chunk_id"] == cid for c in candidate_chunks):
-                            candidate_chunks.append({
-                                "chunk_id": cid,
-                                "content": p,
-                                "document_id": str(note_obj.id),
-                                "page_number": 1,
-                                "section_title": f"Patient Note: {note_obj.title}",
-                                "token_count": len(p.split()),
-                                "bounding_box": {}
-                            })
-            except Exception:
-                pass
+                notes_query = notes_query.filter(id__in=document_filter)
+            for note_obj in notes_query[:10]:
+                paragraphs = [p.strip() for p in note_obj.masked_content.split('\n\n') if p.strip()]
+                for i, p in enumerate(paragraphs, start=1):
+                    cid = f"note_{note_obj.id}_{i}"
+                    if not any(c["chunk_id"] == cid for c in candidate_chunks):
+                        candidate_chunks.append({
+                            "chunk_id": cid,
+                            "content": p,
+                            "document_id": str(note_obj.id),
+                            "page_number": 1,
+                            "section_title": f"Patient Note: {note_obj.title}",
+                            "token_count": len(p.split()),
+                            "bounding_box": {}
+                        })
+        except Exception:
+            pass
 
         # Step 3: BM25 Lexical Retrieval (Top 20)
         bm25_results = self._bm25_search(query, candidate_chunks, k=self.top_dense)

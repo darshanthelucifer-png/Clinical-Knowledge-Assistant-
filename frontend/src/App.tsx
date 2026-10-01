@@ -123,16 +123,17 @@ export const App: React.FC = () => {
         onDone: (doneData) => {
           setIsStreaming(false);
           setStreamingStatus('');
+          const hasScore = doneData.confidence_score !== null && doneData.confidence_score !== undefined;
           setMessages((prev) =>
             prev.map((m) =>
               m.id === assistantId
                 ? {
                     ...m,
                     content: accumulatedTokens || (doneData.is_not_found ? m.content : accumulatedTokens),
-                    confidence_score: doneData.confidence_score,
+                    confidence_score: hasScore ? doneData.confidence_score : undefined,
                     is_not_found: doneData.is_not_found,
-                    citations: doneData.citations,
-                    verifications: doneData.verifications,
+                    citations: doneData.citations || [],
+                    verifications: doneData.verifications || [],
                     disclaimer: doneData.disclaimer,
                     streaming: false,
                   }
@@ -140,322 +141,30 @@ export const App: React.FC = () => {
             )
           );
         },
-        onError: () => {
-          // If backend offline or network dropped, provide high-fidelity grounded demo simulation
-          simulateDemoResponse(query, assistantId);
+        onError: (err) => {
+          setIsStreaming(false);
+          setStreamingStatus('');
+          const errDetail = err?.message || 'Server connection error';
+          setMessages((prev) =>
+            prev.map((m) =>
+              m.id === assistantId
+                ? {
+                    ...m,
+                    content: `⚠️ **Connection Error**: Unable to complete clinical query (${errDetail}). Please ensure the ClinSaarthi backend service is running.`,
+                    confidence_score: undefined,
+                    is_not_found: true,
+                    citations: [],
+                    verifications: [],
+                    disclaimer:
+                      'ClinSaarthi AI is an automated decision-support system. System connectivity issue.',
+                    streaming: false,
+                  }
+                : m
+            )
+          );
         },
       },
     });
-  };
-
-  // High-fidelity fallback simulation matching whichever guideline is selected
-  const simulateDemoResponse = (query: string, assistantId: string) => {
-    setStreamingStatus('Auditing guideline claims against pharmacological sources and RxNorm...');
-
-    setTimeout(() => {
-      let demoAnswer = '';
-      let demoCitations: Citation[] = [];
-      let demoVerifications: VerificationResult[] = [];
-
-      const queryLower = query.toLowerCase();
-      const docLower = (selectedDoc?.title || '').toLowerCase();
-
-      if (activeMode === 'clinical_note_qa') {
-        demoAnswer =
-          `Based on the patient's clinical note [1] and ESC/AHA 2026 Atrial Fibrillation Guidelines [2]:\n\n` +
-          `1. **Patient Presentation & Renal Function**: The patient Rajesh Sharma ([PATIENT_1]) has Paroxysmal AF and moderate renal impairment with **CrCl 38 mL/min** [1].\n` +
-          `2. **Dosage Verification**: Under ESC/AHA guidelines, the standard Rivaroxaban dose is 20 mg once daily. However, for moderate renal impairment (CrCl 15–49 mL/min), guideline Section 4.2 mandates a dose reduction to **15 mg once daily** [2].\n` +
-          `3. **Clinical Recommendation**: The prescribed Rivaroxaban 15 mg once daily with the evening meal is **appropriate and fully compliant** with guideline renal dose-adjustment protocols [1][2].`;
-
-        demoCitations = [
-          {
-            citation_index: 1,
-            inline_tag: '[1]',
-            source_title: `Patient Note: ${activeNoteTitle || 'Cardiology Discharge Note'}`,
-            page_number: 1,
-            section_title: 'Discharge Instructions & Medications',
-            highlight_text:
-              'Patient Rajesh Sharma is initiated on Rivaroxaban 15 mg once daily with the evening meal (dose reduced from 20 mg due to CrCl 38 mL/min). Moderate Renal Impairment (CrCl 38 mL/min).',
-            bounding_box: { x0: 20, y0: 100, x1: 280, y1: 180 },
-          },
-          {
-            citation_index: 2,
-            inline_tag: '[2]',
-            source_title: '2026 AHA/ACC/HRS Guideline for the Management of Atrial Fibrillation',
-            page_number: 3,
-            section_title: 'Section 4.2: Direct Oral Anticoagulant (DOAC) Dosing & Renal Function',
-            highlight_text:
-              'In patients with moderate renal impairment (CrCl 15–49 mL/min), reduce dose to 15 mg once daily.',
-            bounding_box: { x0: 54, y0: 180, x1: 275, y1: 250 },
-          },
-        ];
-
-        demoVerifications = [
-          {
-            drug_name: 'Rivaroxaban',
-            dosage: '15',
-            unit: 'mg',
-            route: 'orally',
-            frequency: 'once daily',
-            status: 'VERIFIED',
-            nli_score: 0.99,
-            explanation: "Verified: 'Rivaroxaban 15 mg once daily' matches renal dose adjustment for CrCl 38 mL/min.",
-            rxnorm_cui: '1114195',
-            openfda_match: true,
-          },
-        ];
-      } else if (docLower.includes('diabet') || queryLower.includes('sglt') || queryLower.includes('metformin') || queryLower.includes('glyc')) {
-        demoAnswer =
-          `According to the **2026 ADA Standards of Care in Diabetes** [1]:\n\n` +
-          `1. **Cardiorenal Protection (Independent of HbA1c)**:\n` +
-          `   - In patients with established Atherosclerotic Cardiovascular Disease (ASCVD), Heart Failure (HF), or Chronic Kidney Disease (CKD), **SGLT2 inhibitors** (Empagliflozin 10-25 mg daily or Dapagliflozin 10 mg daily) or **GLP-1 receptor agonists** (Semaglutide 0.5-2.0 mg weekly) are strongly recommended [1].\n` +
-          `   - SGLT2 inhibitors demonstrate proven reduction in cardiovascular death, heart failure hospitalizations, and progression of CKD [1].\n\n` +
-          `2. **Metformin Renal Dosing & Contraindications**:\n` +
-          `   - **eGFR >= 60 mL/min**: Standard dosing (up to 2000-2550 mg daily) [1].\n` +
-          `   - **eGFR 30–44 mL/min**: Dose reduction recommended (maximum 1000 mg daily) [1].\n` +
-          `   - **eGFR < 30 mL/min**: **Strictly Contraindicated** due to risk of fatal lactic acidosis [1].\n\n` +
-          `3. **Hypoglycemia Emergency**: Apply the **Rule of 15** (ingest 15-20g fast-acting glucose, recheck in 15 minutes) [1].`;
-
-        demoCitations = [
-          {
-            citation_index: 1,
-            inline_tag: '[1]',
-            source_title: '2026 ADA Standards of Care in Diabetes: Type 2 Diabetes Management',
-            page_number: 3,
-            section_title: 'Section 3: Cardiorenal Protective Therapies: SGLT2 Inhibitors & GLP-1 RAs',
-            highlight_text:
-              'In patients with established ASCVD, Heart Failure, or Chronic Kidney Disease, SGLT2 inhibitors or GLP-1 receptor agonists with proven cardiovascular benefit are recommended as part of the glucose-lowering regimen, regardless of baseline HbA1c.',
-            bounding_box: { x0: 40, y0: 95, x1: 285, y1: 220 },
-          },
-        ];
-
-        demoVerifications = [
-          {
-            drug_name: 'Empagliflozin',
-            dosage: '10',
-            unit: 'mg',
-            route: 'orally',
-            frequency: 'once daily',
-            status: 'VERIFIED',
-            nli_score: 0.98,
-            explanation: "Verified: 'Empagliflozin 10 mg once daily' recommended for cardiorenal protection in T2D.",
-            rxnorm_cui: '1545653',
-            openfda_match: true,
-          },
-          {
-            drug_name: 'Semaglutide',
-            dosage: '0.5',
-            unit: 'mg',
-            route: 'subcutaneously',
-            frequency: 'once weekly',
-            status: 'VERIFIED',
-            nli_score: 0.96,
-            explanation: "Verified: 'Semaglutide 0.5 mg SC weekly' recommended for ASCVD risk reduction in T2D.",
-            rxnorm_cui: '1991302',
-            openfda_match: true,
-          },
-        ];
-      } else if (docLower.includes('hypertens') || queryLower.includes('blood pressure') || queryLower.includes('bp')) {
-        demoAnswer =
-          `According to the **2026 ACC/AHA Practice Guideline for High Blood Pressure** [1]:\n\n` +
-          `1. **Universal Target**: Blood pressure **< 130/80 mmHg** is recommended for all non-pregnant adult patients with confirmed hypertension, including those with Diabetes, CKD, or Age >= 65 years [1].\n\n` +
-          `2. **Stage 2 Combination Therapy**: In Stage 2 hypertension (BP >= 140/90 mmHg), initiate prompt combination pharmacotherapy with **two first-line agents** from different classes (e.g. ACE inhibitor + Dihydropyridine CCB, or ARB + Thiazide diuretic) [1].\n\n` +
-          `3. **Resistant Hypertension**: Defined as BP above goal despite 3 optimal antihypertensive classes including a diuretic. **Spironolactone (25 to 50 mg daily)** is the preferred fourth-line agent, provided serum K+ < 4.5 mEq/L and eGFR >= 30 mL/min [1].`;
-
-        demoCitations = [
-          {
-            citation_index: 1,
-            inline_tag: '[1]',
-            source_title: '2026 ACC/AHA Practice Guideline for the Prevention and Management of High Blood Pressure',
-            page_number: 1,
-            section_title: 'Section 1: BP Classification, Measurement & Universal Targets',
-            highlight_text:
-              'A primary target of BP < 130/80 mmHg is recommended for all non-pregnant adult patients with confirmed hypertension (Class I, Level A).',
-            bounding_box: { x0: 310, y0: 95, x1: 555, y1: 210 },
-          },
-        ];
-
-        demoVerifications = [
-          {
-            drug_name: 'Lisinopril',
-            dosage: '20',
-            unit: 'mg',
-            route: 'orally',
-            frequency: 'once daily',
-            status: 'VERIFIED',
-            nli_score: 0.97,
-            explanation: "Verified: 'Lisinopril 20 mg once daily' is first-line ACE inhibitor therapy.",
-            rxnorm_cui: '29046',
-            openfda_match: true,
-          },
-          {
-            drug_name: 'Amlodipine',
-            dosage: '5',
-            unit: 'mg',
-            route: 'orally',
-            frequency: 'once daily',
-            status: 'VERIFIED',
-            nli_score: 0.99,
-            explanation: "Verified: 'Amlodipine 5 mg once daily' is first-line CCB therapy.",
-            rxnorm_cui: '17767',
-            openfda_match: true,
-          },
-        ];
-      } else if (docLower.includes('copd') || queryLower.includes('copd') || queryLower.includes('fev1')) {
-        demoAnswer =
-          `According to the **2026 GOLD Global Strategy for COPD** [1]:\n\n` +
-          `1. **Diagnostic Criterion**: A post-bronchodilator **FEV1/FVC ratio < 0.70** is mandatory to confirm persistent airflow limitation [1].\n\n` +
-          `2. **Maintenance Dual Bronchodilation**: Dual therapy with a **LAMA + LABA** (e.g. Tiotropium + Formoterol) is superior to monotherapy and recommended for Groups B and E [1].\n\n` +
-          `3. **Inhaled Corticosteroids (ICS)**: Triple therapy (LABA + LAMA + ICS) is strongly recommended when **blood eosinophils >= 300 cells/uL** [1]. ICS is not recommended if eosinophils < 100 cells/uL due to increased pneumonia risk.\n\n` +
-          `4. **Exacerbation Oxygen Target**: Titrate supplemental oxygen to achieve target **SpO2 of 88% to 92%** to avoid blunting hypoxic respiratory drive [1].`;
-
-        demoCitations = [
-          {
-            citation_index: 1,
-            inline_tag: '[1]',
-            source_title: '2026 GOLD Global Strategy for the Diagnosis and Management of COPD',
-            page_number: 1,
-            section_title: 'Section 1: Diagnosis, Spirometry Criteria & Severity Assessment',
-            highlight_text:
-              'A post-bronchodilator FEV1/FVC ratio < 0.70 is mandatory to confirm persistent airflow limitation.',
-            bounding_box: { x0: 40, y0: 95, x1: 285, y1: 200 },
-          },
-        ];
-
-        demoVerifications = [
-          {
-            drug_name: 'Tiotropium',
-            dosage: '18',
-            unit: 'mcg',
-            route: 'inhalation',
-            frequency: 'once daily',
-            status: 'VERIFIED',
-            nli_score: 0.98,
-            explanation: "Verified: 'Tiotropium 18 mcg once daily' is first-line maintenance LAMA therapy.",
-            rxnorm_cui: '274783',
-            openfda_match: true,
-          },
-          {
-            drug_name: 'Prednisone',
-            dosage: '40',
-            unit: 'mg',
-            route: 'orally',
-            frequency: 'once daily',
-            status: 'VERIFIED',
-            nli_score: 0.96,
-            explanation: "Verified: 'Prednisone 40 mg daily for 5 days' is recommended for acute exacerbations.",
-            rxnorm_cui: '8640',
-            openfda_match: true,
-          },
-        ];
-      } else if (docLower.includes('pneumon') || queryLower.includes('curb') || queryLower.includes('cap')) {
-        demoAnswer =
-          `According to the **2026 IDSA/ATS Guideline for Community-Acquired Pneumonia (CAP)** [1]:\n\n` +
-          `1. **CURB-65 Risk Stratification & Site of Care**:\n` +
-          `   - **Score 0 to 1**: Low risk (mortality < 1.5%) — Outpatient management is suitable [1].\n` +
-          `   - **Score 2**: Moderate risk (mortality 9.2%) — Inpatient hospital admission or supervised observation [1].\n` +
-          `   - **Score 3 to 5**: High risk (mortality 15% to 40%) — Urgent hospital admission; scores 4-5 require ICU evaluation [1].\n\n` +
-          `2. **Empiric Outpatient Regimens**:\n` +
-          `   - Without comorbidities: **Amoxicillin 1000 mg TID for 5 days** (Class I) or Doxycycline 100 mg BID [1].\n` +
-          `   - With comorbidities: Combination therapy with Amoxicillin-Clavulanate 875/125 mg BID PLUS Azithromycin 500 mg daily [1].`;
-
-        demoCitations = [
-          {
-            citation_index: 1,
-            inline_tag: '[1]',
-            source_title: '2026 IDSA/ATS Guideline for Community-Acquired Pneumonia (CAP)',
-            page_number: 1,
-            section_title: 'Section 1: Clinical Diagnosis, CURB-65 Triage & Site-of-Care Decisions',
-            highlight_text:
-              'CURB-65 Score 0 or 1: Low risk (30-day mortality < 1.5%). Suitable for outpatient management. Score 2: Moderate risk (mortality 9.2%). Inpatient hospital admission.',
-            bounding_box: { x0: 310, y0: 95, x1: 555, y1: 220 },
-          },
-        ];
-
-        demoVerifications = [
-          {
-            drug_name: 'Amoxicillin',
-            dosage: '1000',
-            unit: 'mg',
-            route: 'orally',
-            frequency: 'three times daily',
-            status: 'VERIFIED',
-            nli_score: 0.99,
-            explanation: "Verified: 'Amoxicillin 1000 mg TID for 5 days' is first-line outpatient therapy for CAP.",
-            rxnorm_cui: '723',
-            openfda_match: true,
-          },
-        ];
-      } else {
-        demoAnswer =
-          `According to the **2026 AHA/ACC/HRS Guideline for Atrial Fibrillation** [1], oral anticoagulation is strongly recommended for stroke prevention in non-valvular AF.\n\n` +
-          `**First-Line Direct Oral Anticoagulants (DOACs):**\n` +
-          `- **Rivaroxaban**: 20 mg once daily taken orally with the evening meal [1]. For patients with moderate renal impairment (CrCl 15–49 mL/min), reduce dose to **15 mg once daily** [1].\n` +
-          `- **Apixaban**: 5 mg twice daily orally [1]. Dose reduce to **2.5 mg twice daily** if at least two criteria are met: age >= 80 years, weight <= 60 kg, or serum creatinine >= 1.5 mg/dL.\n\n` +
-          `Direct oral anticoagulants (DOACs) are preferred over Warfarin due to superior safety and reduced intracranial hemorrhage risk.`;
-
-        demoCitations = [
-          {
-            citation_index: 1,
-            inline_tag: '[1]',
-            source_title: '2026 AHA/ACC/HRS Guideline for the Management of Atrial Fibrillation',
-            page_number: 3,
-            section_title: 'Section 4.2: Direct Oral Anticoagulant (DOAC) Dosing & Renal Function',
-            highlight_text:
-              'For non-valvular atrial fibrillation, Rivaroxaban 20 mg once daily with the evening meal is recommended for patients with normal renal function (CrCl >= 50 mL/min). In patients with moderate renal impairment (CrCl 15–49 mL/min), reduce dose to 15 mg once daily.',
-            bounding_box: { x0: 54, y0: 180, x1: 275, y1: 250 },
-          },
-        ];
-
-        demoVerifications = [
-          {
-            drug_name: 'Rivaroxaban',
-            dosage: '20',
-            unit: 'mg',
-            route: 'orally',
-            frequency: 'once daily',
-            status: 'VERIFIED',
-            nli_score: 0.98,
-            explanation: "Verified: 'Rivaroxaban 20 mg once daily' matches cited guideline.",
-            rxnorm_cui: '1114195',
-            openfda_match: true,
-          },
-          {
-            drug_name: 'Apixaban',
-            dosage: '5',
-            unit: 'mg',
-            route: 'orally',
-            frequency: 'twice daily',
-            status: 'VERIFIED',
-            nli_score: 0.96,
-            explanation: "Verified: 'Apixaban 5 mg twice daily' matches cited guideline.",
-            rxnorm_cui: '1364430',
-            openfda_match: true,
-          },
-        ];
-      }
-
-      setMessages((prev) =>
-        prev.map((m) =>
-          m.id === assistantId
-            ? {
-                ...m,
-                content: demoAnswer,
-                confidence_score: 0.96,
-                citations: demoCitations,
-                verifications: demoVerifications,
-                disclaimer:
-                  'MANDATORY MEDICAL DISCLAIMER: ClinSaarthi AI is an automated decision-support reference intended strictly for qualified clinicians and supervised medical students. Always verify recommendations against primary literature and patient clinical presentation.',
-                streaming: false,
-              }
-            : m
-        )
-      );
-
-      setActiveCitation(demoCitations[0]);
-      setIsStreaming(false);
-      setStreamingStatus('');
-    }, 1000);
   };
 
   const handleClearChat = () => {

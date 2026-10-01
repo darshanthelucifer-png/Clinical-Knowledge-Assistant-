@@ -62,6 +62,22 @@ class RetrieveDebugView(APIView):
         }, status=status.HTTP_200_OK)
 
 
+from rest_framework.renderers import JSONRenderer, BaseRenderer, BrowsableAPIRenderer
+
+class ServerSentEventRenderer(BaseRenderer):
+    """
+    Renderer for Server-Sent Events (SSE) streaming protocol.
+    Accepts text/event-stream and yields raw payload.
+    """
+    media_type = 'text/event-stream'
+    format = 'event-stream'
+
+    def render(self, data, accepted_media_type=None, renderer_context=None):
+        if isinstance(data, (bytes, str)):
+            return data
+        return data
+
+
 class AskQuestionView(APIView):
     """
     POST /api/v1/qa/ask/
@@ -69,6 +85,7 @@ class AskQuestionView(APIView):
     Supports Server-Sent Events (SSE) streaming (default) or synchronous JSON.
     """
     permission_classes = [permissions.IsAuthenticated]
+    renderer_classes = [JSONRenderer, ServerSentEventRenderer, BrowsableAPIRenderer]
     throttle_scope = 'ask'
 
     def post(self, request, *args, **kwargs):
@@ -122,9 +139,6 @@ class AskQuestionView(APIView):
         response['Cache-Control'] = 'no-cache'
         response['X-Accel-Buffering'] = 'no'
         return response
-
-
-from rest_framework.renderers import JSONRenderer, BaseRenderer
 
 class MarkdownRenderer(BaseRenderer):
     media_type = 'text/markdown'
